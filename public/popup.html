@@ -79,8 +79,12 @@
               </div>
               <div class="mb-2" id="site-pattern-container" style="display: none">
                 <label class="form-label small mb-1">対象サイトのURL/ドメイン</label>
-                <input type="text" class="form-control form-control-sm" id="rule-site-pattern"
-                  placeholder="例: teams.microsoft.com" />
+                <div class="input-group input-group-sm">
+                  <input type="text" class="form-control form-control-sm" id="rule-site-pattern"
+                    placeholder="例: teams.microsoft.com" />
+                  <button class="btn btn-secondary" type="button" id="get-current-site-button"
+                    title="現在のサイトを取得">現在のサイト</button>
+                </div>
               </div>
               <div class="mb-2">
                 <label class="form-label small mb-1">条件</label>
