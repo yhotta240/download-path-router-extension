@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Chrome Extension Starter Kit",
-  "short_name": "Chrome Extension Starter Kit",
+  "name": "Download Path Router",
+  "short_name": "Download Path Router",
   "version": "0.1.0",
-  "description": "",
+  "description": "ダウンロードしたファイルの保存先を条件に応じて振り分けます",
   "icons": {
     "48": "icons/icon.png"
   },
