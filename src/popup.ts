@@ -89,6 +89,36 @@ class PopupManager {
         sitePatternContainer.style.display = categorySelect.value === 'site' ? 'block' : 'none';
       });
     }
+
+    // 現在のサイトを取得するボタン
+    const getCurrentSiteButton = document.getElementById('get-current-site-button');
+    if (getCurrentSiteButton) {
+      getCurrentSiteButton.addEventListener('click', () => this.fillCurrentSiteUrl());
+    }
+  }
+
+  private fillCurrentSiteUrl(): void {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs.length > 0 && tabs[0].url) {
+        const url = tabs[0].url;
+        // URLからドメイン部分を抽出
+        try {
+          const urlObj = new URL(url);
+          const domain = urlObj.hostname; // www なしのドメインを取得
+          const sitePatternInput = document.getElementById('rule-site-pattern') as HTMLInputElement;
+          if (sitePatternInput) {
+            sitePatternInput.value = domain;
+          }
+        } catch (error) {
+          // console.error('URL parsing error:', error);
+          // URLのパース失敗時は全URLを入力
+          const sitePatternInput = document.getElementById('rule-site-pattern') as HTMLInputElement;
+          if (sitePatternInput) {
+            sitePatternInput.value = url;
+          }
+        }
+      }
+    });
   }
 
   private handleAddOrUpdateRule(): void {
