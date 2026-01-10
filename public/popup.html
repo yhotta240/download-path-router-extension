@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="jp ">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="title"></title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body class="container-md pb-3 p-2 " id="popup-body">
+  <div id="header">
+    <div class="d-flex justify-content-between align-items-center p-1">
+      <div class="d-flex justify-content-center align-items-center">
+        <img src="/icons/icon.png" class="my-auto mx-2" alt="message clear button" height="24">
+        <h1 class="my-auto fs-3" id="title-header"></h1>
+      </div>
+      <button type="button" class="btn btn-sm btn-light p-1 me-2" id="new-tab-button" aria-label="新しいタブで開く"
+        title="新しいタブで開く">
+        <i class="bi bi-box-arrow-up-right" style="font-size: 16px; line-height: 1;"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ステータスの表示 -->
+  <div class="d-flex justify-content-between my-2 mx-1">
+    <label class="my-auto " for="enabled" id="enabled-label"></label>
+    <div class="form-check form-switch form-check-reverse me-3">
+      <input class="form-check-input" type="checkbox" role="switch" id="enabled">
+    </div>
+  </div>
+
+  <!-- メニュータブ -->
+  <ul class="nav nav-underline mb-2 mx-1" id="myTab" role="tablist">
+    <li class="nav-item " role="presentation">
+      <a class="nav-link p-1 p-md-2 active" id="settings-tab" data-bs-toggle="tab" href="#settings" role="tab"
+        aria-controls="settings " aria-selected="true">設定</a>
+    </li>
+    <li class="nav-item " role="presentation">
+      <a class="nav-link p-1 p-md-2" id="document-tab" data-bs-toggle="tab" href="#document" role="tab"
+        aria-controls="document" aria-selected="false">ドキュメント</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link py-1 p-md-2" id="version-tab" data-bs-toggle="tab" href="#version" role="tab"
+        aria-controls="version" aria-selected="true">バージョン</a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link p-1 p-md-2" id="info-tab" data-bs-toggle="tab" href="#info" role="tab" aria-controls="info"
+        aria-selected="false">情報</a>
+    </li>
+  </ul>
+
+
+  <div class="tab-content" id="myTabContent">
+    <!-- 設定 -->
+    <div class="tab-pane fade mt-3 mx-2 show active" id="settings" role="tabpanel" style="margin-bottom: 180px;"
+      aria-labelledby="settings-tab">
+      <h5 class="">設定</h5>
+      <p class="text-muted small">ここに拡張機能の設定項目を追加してください</p>
+
+      <!-- =========================
+        設定項目のテンプレート
+        ※ 以下のコメントアウトされた例を参考に，実際の設定項目を追加してください
+      ========================== -->
+      <ul class="list-group list-group-flush">
+        <!-- 
+        ========== 設定項目の例 ==========
+
+        ▼ セレクトボックス（ドロップダウン）の例:
+        <li class="list-group-item">
+          <div class="mb-3">
+            <label for="theme-select" class="form-label d-flex">テーマ：</label>
+            <select class="form-select" id="theme-select">
+              <option value="light">ライト</option>
+              <option value="dark">ダーク</option>
+              <option value="system">システム</option>
+            </select>
+          </div>
+        </li>
+
+        ▼ スライダー（範囲入力）の例:
+        <li class="list-group-item">
+          <div class="mb-3">
+            <label for="font-size" class="form-label d-flex">フォントサイズ：</label>
+            <input type="range" class="form-range" id="font-size" min="12" max="24" value="16">
+            <small class="text-muted">12〜24の範囲で調整可能</small>
+          </div>
+        </li>
+
+        ▼ チェックボックスの例:
+        <li class="list-group-item">
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="enable-notifications">
+            <label class="form-check-label" for="enable-notifications">
+              通知を受け取る
+            </label>
+          </div>
+        </li>
+
+        ▼ テキスト入力の例:
+        <li class="list-group-item">
+          <div class="mb-3">
+            <label for="api-key" class="form-label d-flex">APIキー：</label>
+            <input type="text" class="form-control" id="api-key" placeholder="APIキーを入力">
+          </div>
+        </li>
+
+        ▼ ラジオボタンの例:
+        <li class="list-group-item">
+          <div class="mb-3">
+            <label class="form-label d-flex">表示モード：</label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="display-mode" id="mode-compact" value="compact">
+              <label class="form-check-label" for="mode-compact">コンパクト</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="display-mode" id="mode-standard" value="standard" checked>
+              <label class="form-check-label" for="mode-standard">標準</label>
+            </div>
+          </div>
+        </li>
+        -->
+      </ul>
+    </div>
+
+    <!-- 概要 -->
+    <div class="tab-pane fade mt-2 mx-2" id="description" role="tabpanel" style="margin-bottom: 200px;"
+      aria-labelledby="description-tab">
+      <div>
+        <h5>概要</h5>
+        <p class="my-1 fw-bold">説明:</p>
+        <p>
+          このChrome拡張機能を使えば，○○できます．
+        </p>
+        <p class="my-1 fw-bold">拡張機能の主な特徴:</p>
+        <p class="mt-1">機能の説明を書く</p>
+        <p class="my-1 fw-bold">注意点:</p>
+        <p class="mt-1">注意点を書く</p>
+      </div>
+    </div>
+
+    <!-- ドキュメント -->
+    <div class="tab-pane fade mt-2 mx-2" id="document" role="tabpanel" style="margin-bottom: 200px;"
+      aria-labelledby="document-tab">
+      <div class="accordion" id="accordion">
+        <!-- 概要 -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#doc-overview"
+              aria-expanded="true" aria-controls="doc-overview">
+              概要
+            </button>
+          </h2>
+          <div id="doc-overview" class="accordion-collapse collapse show" data-bs-parent="#accordion">
+            <div class="accordion-body p-3">
+              <p class="my-1 fw-bold">説明:</p>
+              <p>
+                このChrome拡張機能を使えば，○○できます．
+              </p>
+              <p class="my-1 fw-bold">拡張機能の主な特徴:</p>
+              <div class="mt-1">
+                <ol>
+                  <li class="mb-2">
+                    特徴をここに書く
+                  </li>
+                </ol>
+              </div>
+              <p class="my-1 fw-bold">注意点:</p>
+              <div class="mt-1">
+                <ol>
+                  <li class="mb-2">
+                    注意点を書く
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- チュートリアル -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#doc-tutorial" aria-expanded="false" aria-controls="doc-tutorial">
+              チュートリアル
+            </button>
+          </h2>
+          <div id="doc-tutorial" class="accordion-collapse collapse" data-bs-parent="#accordion">
+            <div class="accordion-body p-3">
+              <p class="mb-1 fw-bold">
+                拡張機能を有効にする
+              </p>
+              <ol>
+                <li>PCで Chrome を開きます．</li>
+                <li>右上の [拡張機能]
+                  <img src="https://storage.googleapis.com/support-kms-prod/pPIeCzvFrMFIBxrrrWuHfxU58Rx9xBLyyv7F"
+                    alt="拡張機能" height="18"> を選択します．
+                </li>
+                <li>「Sample - サンプル」を選択します．（固定を指定しておくと，常に表示されます）</li>
+              </ol>
+
+              <p class="mb-1 fw-bold">
+                Sampleを有効にする
+              </p>
+              <ul class="m-1">
+                <li>拡張機能のポップアップを開き，「Sampleを有効にする」のトグルボタンをクリック
+                  <div>無効にする場合も同じ操作を行ってください．</div>
+                </li>
+              </ul>
+
+              <p class="mb-1 fw-bold">
+                設定
+              </p>
+              <ul>
+                <li>
+                  設定をここに書く
+                </li>
+              </ul>
+
+              <p class="mb-1 fw-bold">
+                操作方法
+              </p>
+              <ul>
+                <li>操作方法をここに書く</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 更新履歴 -->
+    <div class="tab-pane fade mt-2 mx-2 " id="version" role="tabpanel" style="margin-bottom: 200px;"
+      aria-labelledby="version-tab">
+      <ul class="list-group list-group-flush">
+        <h5 class="pt-3 ps-2 mb-2">更新履歴</h5>
+        <li class="list-group-item">
+          <strong>v1.0.0</strong>
+          <ul class="small mt-1">
+            <li>初回リリース</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 詳細情報 -->
+    <div class="tab-pane fade mt-2 mx-2" id="info" role="tabpanel" style="margin-bottom: 200px;"
+      aria-labelledby="info-tab">
+      <ul class="list-group list-group-flush">
+        <h5 class="pt-3 ps-2 mb-2">詳細</h5>
+
+        <li class="list-group-item">
+          <ul>
+            <li>
+              <a class="" href="https://chromewebstore.google.com/" id="store_link">
+                ストアページに移動
+              </a>
+            </li>
+            <li>
+              <a href="" id="extension_link">この拡張機能を管理する</a>
+            </li>
+            <li>
+              <a href="https://forms.gle/" id="issue-link">問題を報告する</a>
+            </li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">名前:</p>
+          <p class="m-0" id="extension-name"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">説明: </p>
+
+          <p class="m-0" id="extension-description"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">バージョン: </p>
+          <p class="m-0" id="extension-version"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">ID: </p>
+          <p class="m-0" id="extension-id"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">権限</p>
+          <p class="m-0" id="permission-info"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">サイトへのアクセス:</p>
+          <p class="m-0 py-1">アクセスしたウェブサイト上にある自分の全データの読み取りと変更をこの拡張機能に許可します．</p>
+          <span id="site-access">Checking...</span>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">シークレット モードでの実行を許可する: </p>
+          <p class="m-0" id="incognito-enabled"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">言語: </p>
+          <p class="m-0" id="language"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">提供元: </p>
+          <p class="m-0" id="publisher-name"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">デベロッパー: </p>
+          <p class="m-0" id="developer-name"></p>
+        </li>
+        <li class="list-group-item">
+          <p class="m-0">GitHub: </p>
+          <a class="m-0" id="github-link" href="#"></a>
+        </li>
+      </ul>
+      <div class="ps-0 " style="margin-bottom: 180px;">
+        <h5 class="ps-1">プライバシー</h5>
+        <p class="ps-3">お客様のデータを収集または使用しないことを表明しています．</p>
+        <p class="ps-3">お客様のデータについて以下を宣言します．</p>
+        <div class="m-2">
+          <ul>
+            <li>
+              承認されている以外の用途で第三者に販売しないこと
+            </li>
+            <li>
+              アイテムの中心機能と関係のない目的で使用または転送しないこと
+            </li>
+            <li>
+              信用力を判断する目的または融資目的で使用または転送しないこと
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- 固定フッターとしての開閉パネル -->
+  <div class="bg-light position-fixed bottom-0 end-0 border-top w-100" style="z-index: 2000;">
+    <!-- ドラッグしてサイズ変更 -->
+    <div class="w-100 position-relative" id="resizer" style="cursor: n-resize; height: 5px;"></div>
+    <div>
+      <!-- タブメニュー -->
+      <div class="d-flex justify-content-between mx-1" id="tab-menu">
+        <ul class="nav nav-underline px-2" id="myTab" role="tablist">
+          <li class="nav-item " role="presentation">
+            <a class="nav-link active p-0" id="settings-tab" data-bs-toggle="tab" href="#messagePanel" role="tab"
+              aria-controls="settings " aria-selected="true">出力</a>
+          </li>
+        </ul>
+        <div class="d-flex me-1">
+          <!-- クリアボタン -->
+          <button type="button" class="btn btn-sm btn-light p-0 me-1" id="clear-button" title="メッセージクリア"
+            style="width: 20px; height: 20px; display: flex; ">
+            <img src="../icons/list_clear.png" alt="message clear button" height="20" class="img-fluid">
+          </button>
+          <!-- 最大化ボタン -->
+          <button type="button" class="btn btn-sm btn-light p-0 me-1" id="maximize-button" title="最大化"
+            style="width: 20px; height: 20px; display: block;">
+            <i class="bi bi-arrow-bar-up" style="font-size: 16px; line-height: 1;"></i>
+          </button>
+          <!-- 最小化ボタン -->
+          <button type="button" class="btn btn-sm btn-light p-0 me-1" id="minimize-button" title="最小化"
+            style="width: 20px; height: 20px; display: none;">
+            <i class="bi bi-arrow-bar-down" style="font-size: 16px; line-height: 1;"></i>
+          </button>
+          <!-- パネルの表示ボタン -->
+          <button type="button" class="btn btn-sm p-0 btn-light" id="panel-button" title="パネルの表示"
+            style="width: 20px; height: 20px; display: flex; ">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -0.5 16 16" fill="none" stroke="#000000"
+              stroke-linecap="round" stroke-linejoin="round" id="Panel-Bottom-Open--Streamline-Lucide" height="16"
+              width="16">
+              <desc>Panel Bottom Open Streamline Icon: https://streamlinehq.com</desc>
+              <path
+                d="M3.125 1.875h8.75s1.25 0 1.25 1.25v8.75s0 1.25 -1.25 1.25H3.125s-1.25 0 -1.25 -1.25V3.125s0 -1.25 1.25 -1.25"
+                stroke-width="1"></path>
+              <path d="M1.875 9.375h11.25" stroke-width="1"></path>
+              <path d="m5.625 6.25 1.875 -1.875 1.875 1.875" stroke-width="1"></path>
+            </svg>
+          </button>
+          <!-- 閉じる -->
+          <button type="button" class="btn btn-sm p-0 btn-light" id="close-button" title="閉じる"
+            style="width: 20px; height: 20px; display: block; ">
+            <i class="bi bi-x" style="font-size: 18px; line-height: 1;"></i>
+          </button>
+        </div>
+      </div>
+      <!-- メッセージ -->
+      <div class="tab-content" id="panel" style="display: block; height: 182px;">
+        <div id="messagePanel" class="bg-light text-dark p-1 overflow-auto tab-pane fade show active h-100"
+          role="tabpanel" aria-labelledby="message-tab">
+          <div id="message" style="border: 1px solid #ccc; padding: 10px; min-height: 100%; box-sizing: border-box;">
+          </div>
+        </div>
+        <div id="convertPanel" class="bg-light text-dark p-1 overflow-auto tab-pane fade h-100" role="tabpanel"
+          aria-labelledby="convert-tab">
+          <div id="convert" class="h-100" style="border: 1px solid #ccc; padding: 10px;"></div>
+        </div>
+        <div id="infoPanel" class="bg-light text-dark p-1 overflow-auto tab-pane fade h-100" role="tabpanel"
+          aria-labelledby="info-tab">
+          <p>情報</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- スクリプトのリンク -->
+  <script src="popup.js"></script>
+</body>
