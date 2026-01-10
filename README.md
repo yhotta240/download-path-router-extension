@@ -13,29 +13,38 @@
 - [Node.js](https://nodejs.org/) (v18.x 以上を推奨)
 - [npm](https://www.npmjs.com/) または [yarn](https://yarnpkg.com/)
 
-## クイックスタート
+## インストール
 
-```bash
-# リポジトリをクローン
-git clone https://github.com/yhotta240/download-path-router-extension
-cd download-path-router-extension
+### Chrome Web Store からインストール
 
-# 依存関係をインストール
-npm install
+準備中…
 
-# 開発モード（ファイル変更を自動監視 + オートリロード）
-npm run watch
+### 手動インストール
 
-# または，本番用ビルド
-npm run build
-```
+1. このリポジトリをクローン
 
-**Chrome に読み込む:**
+   ```bash
+   git clone https://github.com/yhotta240/download-path-router-extension
+   cd download-path-router-extension
+   ```
 
-1. Chrome で `chrome://extensions/` を開く
-2. 「デベロッパーモード」をオンにする
-3. 「パッケージ化されていない拡張機能を読み込む」をクリック
-4. `dist/` ディレクトリを選択
+2. 依存関係をインストール
+
+   ```bash
+   npm install
+   ```
+
+3. ビルド
+
+   ```bash
+   npm run build
+   ```
+
+4. Chrome に読み込む
+   - Chrome で `chrome://extensions/` を開く
+   - 「デベロッパーモード」をオンにする
+   - 「パッケージ化されていない拡張機能を読み込む」をクリック
+   - `dist/` ディレクトリを選択
 
 ## ライセンス
 
