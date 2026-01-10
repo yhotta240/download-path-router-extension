@@ -17,7 +17,7 @@
 
 ### Chrome Web Store からインストール
 
-準備中…
+[Download Path Router - Chrome ウェブストア](https://chrome.google.com/webstore/detail/dhdbncbbbcfecaoagbcefnjjdkncaejm)
 
 ### 手動インストール
 
