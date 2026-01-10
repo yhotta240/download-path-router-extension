@@ -42,12 +42,12 @@ module.exports = {
             to: "./",
             transform(content, absoluteFrom) {
               if (isDev) return content;
-              // production ビルド時に manifest.json から "tabs" パーミッションを削除
+              // production ビルド時に manifest.json の "tabs"を "activeTab" に置き換え
               if (absoluteFrom.endsWith('manifest.json')) {
                 const manifest = JSON.parse(content.toString());
 
                 if (Array.isArray(manifest.permissions)) {
-                  manifest.permissions = manifest.permissions.filter(p => p !== 'tabs');
+                  manifest.permissions = manifest.permissions.map(p => p === 'tabs' ? 'activeTab' : p);
                 }
 
                 const updated = JSON.stringify(manifest, null, 2);
