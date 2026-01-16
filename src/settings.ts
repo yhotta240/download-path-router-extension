@@ -18,6 +18,9 @@ export interface Rule {
   condition: ConditionType;
   pattern: string; // マッチングに使用する文字列
   folder: string; // 保存先フォルダ名（相対パス）
+  overrideFilename?: boolean; // ファイル名を上書きするかどうか
+  rename?: boolean; // リネーム機能を使用するかどうか
+  renameFilename?: string; // リネーム時の新しいファイル名
 }
 
 /**

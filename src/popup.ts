@@ -95,6 +95,15 @@ class PopupManager {
     if (getCurrentSiteButton) {
       getCurrentSiteButton.addEventListener('click', () => this.fillCurrentSiteUrl());
     }
+
+    // リネームチェックボックスによる入力フィールド表示制御
+    const renameCheckbox = document.getElementById('rule-rename') as HTMLInputElement;
+    const renameInputContainer = document.getElementById('rule-rename-input-container');
+    if (renameCheckbox && renameInputContainer) {
+      renameCheckbox.addEventListener('change', () => {
+        renameInputContainer.style.display = renameCheckbox.checked ? 'block' : 'none';
+      });
+    }
   }
 
   private fillCurrentSiteUrl(): void {
@@ -128,6 +137,9 @@ class PopupManager {
     const pattern = (document.getElementById('rule-pattern') as HTMLInputElement).value.trim();
     const folder = (document.getElementById('rule-folder') as HTMLInputElement).value.trim();
     const sitePattern = (document.getElementById('rule-site-pattern') as HTMLInputElement).value.trim();
+    const overrideFilename = (document.getElementById('rule-override-filename') as HTMLInputElement).checked;
+    const rename = (document.getElementById('rule-rename') as HTMLInputElement).checked;
+    const renameFilename = (document.getElementById('rule-rename-filename') as HTMLInputElement).value.trim();
 
     if (!pattern) {
       alert('パターンを入力してください');
@@ -148,7 +160,10 @@ class PopupManager {
       sitePattern: category === 'site' ? sitePattern : undefined,
       condition,
       pattern,
-      folder
+      folder,
+      overrideFilename: overrideFilename || undefined,
+      rename: rename || undefined,
+      renameFilename: rename && renameFilename ? renameFilename : undefined
     };
 
     chrome.storage.local.get(['settings'], (data) => {
@@ -185,6 +200,13 @@ class PopupManager {
     (document.getElementById('rule-pattern') as HTMLInputElement).value = '';
     (document.getElementById('rule-folder') as HTMLInputElement).value = '';
     (document.getElementById('rule-site-pattern') as HTMLInputElement).value = '';
+    (document.getElementById('rule-override-filename') as HTMLInputElement).checked = false;
+    (document.getElementById('rule-rename') as HTMLInputElement).checked = false;
+    (document.getElementById('rule-rename-filename') as HTMLInputElement).value = '';
+    const renameInputContainer = document.getElementById('rule-rename-input-container');
+    if (renameInputContainer) {
+      renameInputContainer.style.display = 'none';
+    }
 
     // ボタンとタイトルを元に戻す
     if (addButton) {
@@ -212,6 +234,10 @@ class PopupManager {
     const patternInput = document.getElementById('rule-pattern') as HTMLInputElement;
     const folderInput = document.getElementById('rule-folder') as HTMLInputElement;
     const sitePatternInput = document.getElementById('rule-site-pattern') as HTMLInputElement;
+    const overrideFilenameCheckbox = document.getElementById('rule-override-filename') as HTMLInputElement;
+    const renameCheckbox = document.getElementById('rule-rename') as HTMLInputElement;
+    const renameFilenameInput = document.getElementById('rule-rename-filename') as HTMLInputElement;
+    const renameInputContainer = document.getElementById('rule-rename-input-container');
     const sitePatternContainer = document.getElementById('site-pattern-container');
     const addButton = document.getElementById('add-rule-button');
     const cancelButton = document.getElementById('cancel-edit-button');
@@ -226,6 +252,12 @@ class PopupManager {
     patternInput.value = rule.pattern;
     folderInput.value = rule.folder;
     sitePatternInput.value = rule.sitePattern || '';
+    overrideFilenameCheckbox.checked = rule.overrideFilename || false;
+    renameCheckbox.checked = rule.rename || false;
+    renameFilenameInput.value = rule.renameFilename || '';
+    if (renameInputContainer) {
+      renameInputContainer.style.display = (rule.rename || false) ? 'block' : 'none';
+    }
 
     // コンテナの表示切り替え
     if (sitePatternContainer) {
