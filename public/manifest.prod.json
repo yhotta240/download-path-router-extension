@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Download Path Router - ダウンロードパスルーター",
+  "short_name": "Download Path Router",
+  "version": "1.0.1",
+  "description": "ダウンロードしたファイルの保存先を条件に応じて振り分けます",
+  "icons": {
+    "48": "icons/icon.png"
+  },
+  "permissions": ["storage", "activeTab", "downloads"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://*/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
