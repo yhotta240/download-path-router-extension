@@ -8,7 +8,7 @@ module.exports = {
   mode: isDev ? "development" : "production",
   devtool: isDev ? "inline-source-map" : false,
   entry: {
-    background: "./src/background.ts",
+    background: isDev ? "./src/background.dev.ts" : "./src/background.ts",
     content: "./src/content.ts",
     popup: "./src/popup.ts"
   },
@@ -37,25 +37,18 @@ module.exports = {
     const plugins = [
       new CopyWebpackPlugin({
         patterns: [
+          // public の静的ファイルをコピー（manifest.dev.json / manifest.prod.json は除外）
           {
             from: "./public",
             to: "./",
-            transform(content, absoluteFrom) {
-              if (isDev) return content;
-              // production ビルド時に manifest.json の "tabs"を "activeTab" に置き換え
-              if (absoluteFrom.endsWith('manifest.json')) {
-                const manifest = JSON.parse(content.toString());
-
-                if (Array.isArray(manifest.permissions)) {
-                  manifest.permissions = manifest.permissions.map(p => p === 'tabs' ? 'activeTab' : p);
-                }
-
-                const updated = JSON.stringify(manifest, null, 2);
-                return Buffer.from(updated);
-              }
-
-              return content;
+            globOptions: {
+              ignore: ["**/manifest.dev.json", "**/manifest.prod.json"]
             }
+          },
+          // 適切な manifest を manifest.json として出力
+          {
+            from: `./public/manifest.${isDev ? "dev" : "prod"}.json`,
+            to: "manifest.json"
           }
         ]
       })
