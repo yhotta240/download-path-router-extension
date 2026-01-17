@@ -65,11 +65,17 @@ function handleDeterminingFilename(item: chrome.downloads.DownloadItem, suggest:
 
     // ルールを順に確認
     for (const rule of sortedRules) {
-      const matchedFolder = matchRule(rule, item, pageUrl);
-      if (matchedFolder) {
-        const finalFilename = matchedFolder ? `${matchedFolder}/${item.filename}` : item.filename;
-        suggest({ filename: finalFilename, conflictAction: "uniquify" });
-        console.log(`ルール適用: ${rule.id} → ${finalFilename}`);
+      const matchResult = matchRule(rule, item, pageUrl);
+      if (matchResult) {
+        let filename = item.filename;
+
+        const finalFilename = matchResult.folder ? `${matchResult.folder}/${filename}` : filename;
+
+        // ファイル名の上書き設定に応じてconflictActionを変更
+        const conflictAction = rule.overrideFilename ? "overwrite" : "uniquify";
+
+        suggest({ filename: finalFilename, conflictAction: conflictAction });
+        console.log(`ルール適用: ${rule.id} → ${finalFilename} (conflictAction: ${conflictAction})`);
         return;
       }
     }
@@ -80,9 +86,17 @@ function handleDeterminingFilename(item: chrome.downloads.DownloadItem, suggest:
 }
 
 /**
+ * ルール判定結果
+ */
+interface MatchResult {
+  folder: string;
+  originalFilename: string;
+}
+
+/**
  * ルール判定
  */
-function matchRule(rule: Rule, item: chrome.downloads.DownloadItem, pageUrl: string | null): string | null {
+function matchRule(rule: Rule, item: chrome.downloads.DownloadItem, pageUrl: string | null): MatchResult | null {
   // サイト別ルールのサイト判定
   if (rule.category === "site" && rule.sitePattern) {
     const downloadUrlMatch = item.url.toLowerCase().includes(rule.sitePattern.toLowerCase());
@@ -105,5 +119,12 @@ function matchRule(rule: Rule, item: chrome.downloads.DownloadItem, pageUrl: str
     matched = item.url.toLowerCase().includes(pattern);
   }
 
-  return matched ? rule.folder.replace(/\/$/, "") : null;
+  if (!matched) {
+    return null;
+  }
+
+  return {
+    folder: rule.folder.replace(/\/$/, ""),
+    originalFilename: item.filename
+  };
 }
