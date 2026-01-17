@@ -1,4 +1,5 @@
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import Sortable from 'sortablejs';
 import { PopupPanel } from './popup/panel';
 import { dateTime } from './utils/date';
 import { clickURL } from './utils/dom';
@@ -12,6 +13,8 @@ class PopupManager {
   private enabledElement: HTMLInputElement | null;
   private manifestData: chrome.runtime.Manifest;
   private manifestMetadata: { [key: string]: any } = (meta as any) || {};
+  private sortModeActive: { site: boolean; general: boolean } = { site: false, general: false };
+  private sortableInstances: { site: Sortable | null; general: Sortable | null } = { site: null, general: null };
 
   constructor() {
     this.panel = new PopupPanel();
@@ -79,6 +82,17 @@ class PopupManager {
     const cancelEditButton = document.getElementById('cancel-edit-button');
     if (cancelEditButton) {
       cancelEditButton.addEventListener('click', () => this.cancelEdit());
+    }
+
+    // 並び替えボタン
+    const toggleSiteSortBtn = document.getElementById('toggle-site-sort-mode');
+    if (toggleSiteSortBtn) {
+      toggleSiteSortBtn.addEventListener('click', () => this.toggleSortMode('site'));
+    }
+
+    const toggleGeneralSortBtn = document.getElementById('toggle-general-sort-mode');
+    if (toggleGeneralSortBtn) {
+      toggleGeneralSortBtn.addEventListener('click', () => this.toggleSortMode('general'));
     }
 
     // カテゴリ選択による表示切り替え
@@ -305,22 +319,44 @@ class PopupManager {
     const siteRules = rules.filter(r => r.category === 'site');
     const generalRules = rules.filter(r => r.category === 'general');
 
+    // 優先度でソート（小さいほど優先度が高い）
+    const sortByPriority = (a: Rule, b: Rule) => {
+      const priorityA = a.priority ?? Number.MAX_VALUE;
+      const priorityB = b.priority ?? Number.MAX_VALUE;
+      return priorityA - priorityB;
+    };
+
     if (siteRules.length === 0) {
       siteList.innerHTML = '<div class="text-muted small text-center p-2 border rounded">登録されたルールはありません</div>';
     } else {
-      siteRules.forEach(rule => siteList.appendChild(this.createRuleElement(rule)));
+      siteRules.sort(sortByPriority).forEach((rule, index) => {
+        siteList.appendChild(this.createRuleElement(rule, index + 1, siteRules.length, 'site'));
+      });
+      if (this.sortModeActive.site) {
+        this.initSortable(siteList, 'site');
+      }
     }
 
     if (generalRules.length === 0) {
       generalList.innerHTML = '<div class="text-muted small text-center p-2 border rounded">登録されたルールはありません</div>';
     } else {
-      generalRules.forEach(rule => generalList.appendChild(this.createRuleElement(rule)));
+      generalRules.sort(sortByPriority).forEach((rule, index) => {
+        generalList.appendChild(this.createRuleElement(rule, index + 1, generalRules.length, 'general'));
+      });
+      if (this.sortModeActive.general) {
+        this.initSortable(generalList, 'general');
+      }
     }
+
+    // 並び替えモードの表示状態を更新
+    this.updateSortModeDisplay();
   }
 
-  private createRuleElement(rule: Rule): HTMLElement {
+  private createRuleElement(rule: Rule, priority: number, totalRules: number, category: RuleCategory): HTMLElement {
     const div = document.createElement('div');
     div.className = 'list-group-item p-2 d-flex justify-content-between align-items-center';
+    div.id = `rule-${rule.id}`;
+    div.setAttribute('data-id', rule.id);
 
     const conditionLabels: { [key: string]: string } = {
       extension: '拡張子',
@@ -349,8 +385,12 @@ class PopupManager {
       : '';
 
     div.innerHTML = `
-      <div class="overflow-hidden me-2" style="font-size: 0.85rem;">
-        <div class="fw-bold text-truncate" title="${rule.pattern}">
+      <div class="drag-handle" style="cursor: move; padding: 4px; margin-right: 8px;">
+        <i class="bi bi-grip-vertical" style="font-size: 16px; color: #6c757d;"></i>
+      </div>
+      <div class="overflow-hidden me-2" style="font-size: 0.85rem; flex: 1;">
+        <div class="fw-bold text-truncate d-flex align-items-center" title="${rule.pattern}">
+          <span class="badge bg-info me-1">優先度: ${priority}</span>
           <span class="badge bg-secondary me-1">${conditionLabels[rule.condition]}</span>
           ${rule.pattern}
         </div>
@@ -380,6 +420,75 @@ class PopupManager {
     }
 
     return div;
+  }
+
+  private initSortable(element: HTMLElement, category: RuleCategory): void {
+    // 既存のインスタンスがあれば破棄
+    if (this.sortableInstances[category]) {
+      this.sortableInstances[category]!.destroy();
+    }
+
+    this.sortableInstances[category] = Sortable.create(element, {
+      animation: 150,
+      handle: '.drag-handle',
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      dragClass: 'sortable-drag',
+      onEnd: (evt) => {
+        if (evt.oldIndex === evt.newIndex) return;
+
+        chrome.storage.local.get(['settings'], (data) => {
+          const settings: Settings = data.settings || { rules: [] };
+          const categoryRules = settings.rules
+            .filter(r => r.category === category)
+            .sort((a, b) => {
+              const priorityA = a.priority ?? Number.MAX_VALUE;
+              const priorityB = b.priority ?? Number.MAX_VALUE;
+              return priorityA - priorityB;
+            });
+
+          // 移動先のインデックスに基づいて優先度を再計算
+          const movedRule = categoryRules[evt.oldIndex!];
+          categoryRules.splice(evt.oldIndex!, 1);
+          categoryRules.splice(evt.newIndex!, 0, movedRule);
+
+          // 新しい優先度を割り当て
+          categoryRules.forEach((rule, index) => {
+            rule.priority = index + 1;
+          });
+
+          chrome.storage.local.set({ settings }, () => {
+            this.renderRules(settings.rules);
+            this.showMessage('ルールの優先度を変更しました');
+          });
+        });
+      }
+    });
+  }
+
+  private toggleSortMode(category: RuleCategory): void {
+    this.sortModeActive[category] = !this.sortModeActive[category];
+
+    chrome.storage.local.get(['settings'], (data) => {
+      const settings: Settings = data.settings || { rules: [] };
+      this.renderRules(settings.rules);
+    });
+  }
+
+  private updateSortModeDisplay(): void {
+    const siteList = document.getElementById('site-rules-list');
+    const generalList = document.getElementById('general-rules-list');
+    const toggleSiteSortBtn = document.getElementById('toggle-site-sort-mode');
+    const toggleGeneralSortBtn = document.getElementById('toggle-general-sort-mode');
+
+    siteList?.classList.toggle('sort-mode-active', this.sortModeActive.site);
+    generalList?.classList.toggle('sort-mode-active', this.sortModeActive.general);
+
+    toggleSiteSortBtn?.classList.toggle('btn-primary', this.sortModeActive.site);
+    toggleSiteSortBtn?.classList.toggle('btn-outline-secondary', !this.sortModeActive.site);
+
+    toggleGeneralSortBtn?.classList.toggle('btn-primary', this.sortModeActive.general);
+    toggleGeneralSortBtn?.classList.toggle('btn-outline-secondary', !this.sortModeActive.general);
   }
 
   private handleDeleteRule(id: string): void {
