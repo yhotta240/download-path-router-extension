@@ -8,7 +8,8 @@
     "build": "cross-env NODE_ENV=production webpack",
     "build:dev": "cross-env NODE_ENV=development webpack",
     "watch": "cross-env NODE_ENV=development webpack --watch",
-    "publish": "npm run build && npx ts-node scripts/publish.mts"
+    "zip": "npm run build && npx tsx scripts/create-zip.mts",
+    "publish": "npm run build && npx tsx scripts/publish.mts"
   },
   "keywords": [],
   "author": "yhotta240",
@@ -20,6 +21,7 @@
     "copy-webpack-plugin": "^13.0.1",
     "cross-env": "^10.1.0",
     "ts-loader": "^9.5.4",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.2",
     "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1",
