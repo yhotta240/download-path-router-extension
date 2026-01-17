@@ -21,3 +21,25 @@ html {
 #panel.no-transition {
   transition: none !important;
 }
+
+/* Sortable.js styles */
+.drag-handle {
+  display: none;
+}
+
+.sort-mode-active .drag-handle {
+  display: block;
+}
+
+.sortable-ghost {
+  opacity: 0.4;
+  background: #f8f9fa;
+}
+
+.sortable-chosen {
+  background: #e9ecef;
+}
+
+.sortable-drag {
+  opacity: 1;
+}

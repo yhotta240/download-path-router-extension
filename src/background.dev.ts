@@ -3,7 +3,7 @@ import { reloadTargetTabs } from "./utils/reload-tabs";
 import { reloadExtension } from "../scripts/reload";
 
 // 開発用のターゲットURLパターン
-const targetUrls: string[] = ["https://www.google.com/*", "https://github.com/*"];
+const targetUrls: string[] = ["https://www.google.com/*", "https://github.com/*", "https://docs.google.com/*"];
 
 if (process.env.NODE_ENV === "development") {
   console.log("開発環境：", process.env.NODE_ENV);

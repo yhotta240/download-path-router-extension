@@ -143,14 +143,24 @@
       </div>
 
       <!-- サイト別ルールリスト -->
-      <h6 class="mt-4 mb-2">サイト別ルール</h6>
+      <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+        <h6 class="mb-0">サイト別ルール</h6>
+        <button class="btn btn-outline-secondary btn-sm" id="toggle-site-sort-mode" title="並び替えモード">
+          <i class="bi bi-arrow-down-up"></i> 並び替え
+        </button>
+      </div>
       <div id="site-rules-list" class="list-group mb-4">
         <!-- ここにJavaScriptでルールが追加されます -->
         <div class="text-muted small text-center p-2 border rounded">登録されたルールはありません</div>
       </div>
 
       <!-- 通常ルールリスト -->
-      <h6 class="mt-4 mb-2">通常ルール</h6>
+      <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+        <h6 class="mb-0">通常ルール</h6>
+        <button class="btn btn-outline-secondary btn-sm" id="toggle-general-sort-mode" title="並び替えモード">
+          <i class="bi bi-arrow-down-up"></i> 並び替え
+        </button>
+      </div>
       <div id="general-rules-list" class="list-group mb-4">
         <!-- ここにJavaScriptでルールが追加されます -->
         <div class="text-muted small text-center p-2 border rounded">登録されたルールはありません</div>

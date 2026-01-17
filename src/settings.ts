@@ -21,6 +21,7 @@ export interface Rule {
   overrideFilename?: boolean; // ファイル名を上書きするかどうか
   rename?: boolean; // リネーム機能を使用するかどうか
   renameFilename?: string; // リネーム時の新しいファイル名
+  priority?: number; // カテゴリ内での優先順位（小さいほど優先度が高い）
 }
 
 /**

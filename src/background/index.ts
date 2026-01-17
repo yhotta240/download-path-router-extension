@@ -79,11 +79,16 @@ function handleDeterminingFilename(item: chrome.downloads.DownloadItem, suggest:
     const settings: Settings = data.settings || { rules: [] };
     const rules: Rule[] = settings.rules || [];
 
-    // サイト別ルールを優先
+    // サイト別ルールを優先し，同カテゴリ内では優先度でソート
     const sortedRules = [...rules].sort((a, b) => {
+      // まずカテゴリで分類（サイト別 > 通常）
       if (a.category === "site" && b.category === "general") return -1;
       if (a.category === "general" && b.category === "site") return 1;
-      return 0;
+
+      // 同じカテゴリ内では優先度でソート（小さいほど優先度が高い）
+      const priorityA = a.priority ?? Number.MAX_VALUE;
+      const priorityB = b.priority ?? Number.MAX_VALUE;
+      return priorityA - priorityB;
     });
 
     const pageUrl = downloadPageUrlMap.get(item.id) || null;
