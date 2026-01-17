@@ -1,6 +1,7 @@
 import { Rule, Settings } from "../settings";
 import { recordClick, cleanup } from "./click-history";
 import { findPageUrl } from "./download-matcher";
+import { getDateTimeFormats } from "../utils/date";
 
 // ダウンロードIDとページURLのマッピング
 const downloadPageUrlMap = new Map<number, string>();
@@ -41,6 +42,30 @@ export function downloadPathRouter(): void {
 }
 
 /**
+ * プレースホルダーを実際の値に置換する
+ */
+function replacePlaceholders(template: string, originalFilename: string): string {
+  // ファイル名と拡張子を分離
+  const lastDotIndex = originalFilename.lastIndexOf('.');
+  const filenameWithoutExt = lastDotIndex > 0 ? originalFilename.substring(0, lastDotIndex) : originalFilename;
+  const extension = lastDotIndex > 0 ? originalFilename.substring(lastDotIndex + 1) : '';
+
+  // 日時フォーマットを取得
+  const { date, time, datetime } = getDateTimeFormats();
+
+  // プレースホルダーを置換
+  let result = template
+    .replace(/\[original\]/gi, filenameWithoutExt)
+    .replace(/\[filename\]/gi, filenameWithoutExt)
+    .replace(/\[ext\]/gi, extension)
+    .replace(/\[date\]/gi, date)
+    .replace(/\[time\]/gi, time)
+    .replace(/\[datetime\]/gi, datetime);
+
+  return result;
+}
+
+/**
  * ダウンロードファイル名決定処理
  */
 function handleDeterminingFilename(item: chrome.downloads.DownloadItem, suggest: (suggestion?: chrome.downloads.FilenameSuggestion) => void): void {
@@ -65,11 +90,34 @@ function handleDeterminingFilename(item: chrome.downloads.DownloadItem, suggest:
 
     // ルールを順に確認
     for (const rule of sortedRules) {
-      const matchedFolder = matchRule(rule, item, pageUrl);
-      if (matchedFolder) {
-        const finalFilename = matchedFolder ? `${matchedFolder}/${item.filename}` : item.filename;
-        suggest({ filename: finalFilename, conflictAction: "uniquify" });
-        console.log(`ルール適用: ${rule.id} → ${finalFilename}`);
+      const matchResult = matchRule(rule, item, pageUrl);
+      if (matchResult) {
+        let filename = item.filename;
+
+        // リネーム処理
+        if (rule.rename && rule.renameFilename) {
+          const originalFilename = item.filename;
+          const newBasename = replacePlaceholders(rule.renameFilename, originalFilename);
+
+          // 拡張子を追加（テンプレートに[ext]が含まれていない場合）
+          const lastDotIndex = originalFilename.lastIndexOf('.');
+          const extension = lastDotIndex > 0 ? originalFilename.substring(lastDotIndex) : '';
+
+          // [ext]プレースホルダーが使われている場合は拡張子を手動追加しない
+          if (rule.renameFilename.includes('[ext]')) {
+            filename = `${newBasename}`;
+          } else {
+            filename = `${newBasename}${extension}`;
+          }
+        }
+
+        const finalFilename = matchResult.folder ? `${matchResult.folder}/${filename}` : filename;
+
+        // ファイル名の上書き設定に応じてconflictActionを変更
+        const conflictAction = rule.overrideFilename ? "overwrite" : "uniquify";
+
+        suggest({ filename: finalFilename, conflictAction: conflictAction });
+        console.log(`ルール適用: ${rule.id} → ${finalFilename} (conflictAction: ${conflictAction})`);
         return;
       }
     }
@@ -80,9 +128,17 @@ function handleDeterminingFilename(item: chrome.downloads.DownloadItem, suggest:
 }
 
 /**
+ * ルール判定結果
+ */
+interface MatchResult {
+  folder: string;
+  originalFilename: string;
+}
+
+/**
  * ルール判定
  */
-function matchRule(rule: Rule, item: chrome.downloads.DownloadItem, pageUrl: string | null): string | null {
+function matchRule(rule: Rule, item: chrome.downloads.DownloadItem, pageUrl: string | null): MatchResult | null {
   // サイト別ルールのサイト判定
   if (rule.category === "site" && rule.sitePattern) {
     const downloadUrlMatch = item.url.toLowerCase().includes(rule.sitePattern.toLowerCase());
@@ -105,5 +161,12 @@ function matchRule(rule: Rule, item: chrome.downloads.DownloadItem, pageUrl: str
     matched = item.url.toLowerCase().includes(pattern);
   }
 
-  return matched ? rule.folder.replace(/\/$/, "") : null;
+  if (!matched) {
+    return null;
+  }
+
+  return {
+    folder: rule.folder.replace(/\/$/, ""),
+    originalFilename: item.filename
+  };
 }

@@ -105,6 +105,33 @@
                   placeholder="例: Documents/Work" />
                 <small class="text-muted" style="font-size: 0.75rem">※ダウンロードフォルダからの相対パス</small>
               </div>
+
+              <!-- オプションセクション -->
+              <div class="border-top pt-2 mb-3">
+                <h6 class="mb-1 small fw-bold">オプション</h6>
+
+                <!-- ファイル名の上書きチェックボックス -->
+                <div class="form-check mb-1">
+                  <input class="form-check-input" type="checkbox" id="rule-override-filename" />
+                  <label class="form-check-label small" for="rule-override-filename">
+                    ファイル名の上書き
+                  </label>
+                </div>
+
+                <!-- リネームチェックボックス + 入力フィールド -->
+                <div class="form-check mb-1">
+                  <input class="form-check-input" type="checkbox" id="rule-rename" />
+                  <label class="form-check-label small" for="rule-rename">
+                    リネーム
+                  </label>
+                </div>
+                <div class="ms-4" id="rule-rename-input-container" style="display: none;">
+                  <input type="text" class="form-control form-control-sm" id="rule-rename-filename"
+                    placeholder="例: [date]-[original] や backup-[original] など" />
+                  <small class="text-muted" style="font-size: 0.75rem">利用可能: [original], [date], [time], [datetime], [ext]</small>
+                </div>
+              </div>
+
               <div class="d-flex gap-2">
                 <button class="btn btn-primary btn-sm w-100" id="add-rule-button">ルールを追加</button>
                 <button class="btn btn-outline-secondary btn-sm w-100" id="cancel-edit-button"
