@@ -251,16 +251,18 @@
           </h2>
           <div id="doc-terms" class="accordion-collapse collapse" data-bs-parent="#accordion">
             <div class="accordion-body p-3 small">
+              <p class="mb-1 fw-bold">優先順位と並び替えの仕様</p>
+              <ul class="mb-3">
+                <li>まず「サイト別設定」を判定し，次に「通常設定」を判定します．</li>
+                <li>カテゴリ内は「優先度: n」が小さい順に適用します．</li>
+                <li>「並び替え」ボタンでハンドルが表示され，ドラッグした順序がそのまま保存されます．終わったらボタンをオフにするとハンドルが隠れます．</li>
+                <li class="mb-0">例：通常設定に「pdf→PDF」，サイト別設定に「teams→Teams」がある場合，Teams からの PDF は Teams フォルダに保存されます．</li>
+              </ul>
+
               <p class="mb-1 fw-bold">保存先フォルダ（相対パス）</p>
               <p>
                 ブラウザ設定の「ダウンロード先」を起点としたパスです． <br />例：設定が「C:\Downloads」で，入力が「Work/Project」の場合
                 <br />結果：「C:\Downloads\Work\Project\ファイル名」として保存されます．
-              </p>
-
-              <p class="mb-1 fw-bold">サイト別設定の優先順位</p>
-              <p>
-                通常設定よりも優先して判定されます． <br />例：通常設定で「pdf → PDFフォルダ」があり，サイト別設定で「teams → Teamsフォルダ」がある場合．
-                <br />結果：TeamsからダウンロードしたPDFは「Teamsフォルダ」に保存されます．
               </p>
 
               <p class="mb-1 fw-bold">マッチング条件の例</p>
@@ -270,6 +272,58 @@
                 <li><strong>ファイル名：</strong>名前の一部． <br /><span class="text-muted">例：「領収書」→「Finance」フォルダへ．</span></li>
                 <li><strong>URL：</strong>ダウンロード元のアドレス． <br /><span class="text-muted">例：「github.com」→「Code」フォルダへ．</span>
                 </li>
+              </ul>
+
+              <p class="mb-1 fw-bold">ファイル名の上書き設定</p>
+              <ul class="mb-3">
+                <li>オン: 同名ファイルがあっても上書きします．</li>
+                <li>オフ: ブラウザ標準の動作で「(1)」「(2)」のように連番を付けます．</li>
+                <li>リネーム使用時も，上書きするかどうかはこの設定に従います．</li>
+              </ul>
+
+              <p class="mb-1 fw-bold">リネームとプレースホルダー</p>
+              <p class="mb-1">「リネーム」をオンにするとテンプレート欄が出て，保存名を自由に組み立てられます．</p>
+              <div class="table-responsive mb-2">
+                <table class="table table-sm align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th class="small">プレースホルダー</th>
+                      <th class="small">意味</th>
+                      <th class="small">フォーマット例</th>
+                    </tr>
+                  </thead>
+                  <tbody class="small">
+                    <tr>
+                      <td>[original] / [filename]</td>
+                      <td>元のファイル名（拡張子なし）</td>
+                      <td>report</td>
+                    </tr>
+                    <tr>
+                      <td>[ext]</td>
+                      <td>拡張子</td>
+                      <td>pdf</td>
+                    </tr>
+                    <tr>
+                      <td>[date]</td>
+                      <td>日付</td>
+                      <td>20260117</td>
+                    </tr>
+                    <tr>
+                      <td>[time]</td>
+                      <td>時刻</td>
+                      <td>142530</td>
+                    </tr>
+                    <tr>
+                      <td>[datetime]</td>
+                      <td>日付+時刻</td>
+                      <td>20260117-142530</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <ul class="mb-3">
+                <li>テンプレートに [ext] が無い場合は，元の拡張子を末尾に自動で付けます．</li>
+                <li class="mb-0">例：元のファイル名「report.pdf」，テンプレート「[date]-[original]」→ 「20260117-report.pdf」</li>
               </ul>
             </div>
           </div>
@@ -283,8 +337,16 @@
       <ul class="list-group list-group-flush">
         <h5 class="pt-3 ps-2 mb-2">更新履歴</h5>
         <li class="list-group-item">
-          <strong>v1.0.1</strong>
+          <strong>v1.1.0</strong>
           <span class="badge bg-primary">最新</span>
+          <ul class="small mt-1">
+            <li>カテゴリ内の優先度を明記（小さい順に適用）</li>
+            <li>並び替えモードでドラッグして優先度変更</li>
+            <li>ファイル名の上書き可否とリネーム（プレースホルダー対応）を追加</li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <strong>v1.0.1</strong>
           <ul class="small mt-1">
             <li>「現在のサイト」取得機能の不具合を修正</li>
           </ul>
@@ -363,6 +425,7 @@
           <p class="m-0">GitHub:</p>
           <a class="m-0" id="github-link" href="#"></a>
         </li>
+        <li class="list-group-item"></li>
       </ul>
       <div class="ps-0" style="margin-bottom: 180px">
         <h5 class="ps-1">プライバシー</h5>
