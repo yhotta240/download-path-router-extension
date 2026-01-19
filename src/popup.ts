@@ -185,40 +185,28 @@ class PopupManager {
       const settings: Settings = data.settings || { rules: [] };
 
       if (isEdit) {
-        // 既存ルールの更新(優先度は維持)
+        // 既存ルールの更新
         const index = settings.rules.findIndex(r => r.id === ruleId);
-        if (index !== -1) {
-          const existingPriority = settings.rules[index].priority;
-          // 優先度を維持して更新
-          updatedRule.priority = existingPriority;
-          settings.rules[index] = updatedRule;
-        } else {
+        if (index === -1) {
           console.error('編集しようとしたルールが見つかりません:', ruleId);
           this.showMessage('ルールの編集に失敗しました．対象のルールが見つかりませんでした．');
           return;
         }
+
+        const originalRule = settings.rules[index];
+
+        if (originalRule.category === updatedRule.category) {
+          // カテゴリ変更なし: 優先度を維持して上書き
+          updatedRule.priority = originalRule.priority;
+          settings.rules[index] = updatedRule;
+        } else {
+          // カテゴリ変更あり: 元ルールを削除し，新カテゴリの先頭に挿入
+          settings.rules = settings.rules.filter(r => r.id !== ruleId);
+          this.insertRuleAtCategoryHead(settings, updatedRule);
+        }
       } else {
-        // 新規ルール追加
-        // 同じカテゴリ内の既存ルールとその他のルールを分離
-        const currentCategoryRules = settings.rules.filter(r => r.category === updatedRule.category);
-        const otherCategoryRules = settings.rules.filter(r => r.category !== updatedRule.category);
-
-        // 新しいルールは常に先頭（優先度1）
-        const newRuleWithPriority: Rule = {
-          ...updatedRule,
-          priority: 1,
-        };
-
-        // 既存ルールの優先度を1ずつずらす
-        const categoryRulesWithUpdatedPriority: Rule[] = currentCategoryRules.map(r => {
-          if (typeof r.priority === 'number') {
-            return { ...r, priority: r.priority + 1 };
-          }
-          return r;
-        });
-
-        // カテゴリごとのルールを再構成してから，全体のrulesを更新
-        settings.rules = [newRuleWithPriority, ...categoryRulesWithUpdatedPriority, ...otherCategoryRules];
+        // 新規ルール追加: 指定カテゴリの先頭に挿入して既存優先度を +1
+        this.insertRuleAtCategoryHead(settings, updatedRule);
       }
 
       // 優先度の連番を詰めてから保存
@@ -524,6 +512,26 @@ class PopupManager {
     });
 
     settings.rules = normalized;
+  }
+
+  // 指定カテゴリの先頭にルールを挿入し，既存ルールの優先度を +1 する
+  private insertRuleAtCategoryHead(settings: Settings, updatedRule: Rule): void {
+    const currentCategoryRules = settings.rules.filter(r => r.category === updatedRule.category);
+    const otherCategoryRules = settings.rules.filter(r => r.category !== updatedRule.category);
+
+    const newRuleWithPriority: Rule = {
+      ...updatedRule,
+      priority: 1,
+    };
+
+    const categoryRulesWithUpdatedPriority: Rule[] = currentCategoryRules.map(r => {
+      if (typeof r.priority === 'number') {
+        return { ...r, priority: r.priority + 1 };
+      }
+      return r;
+    });
+
+    settings.rules = [newRuleWithPriority, ...categoryRulesWithUpdatedPriority, ...otherCategoryRules];
   }
 
   private toggleSortMode(category: RuleCategory): void {
