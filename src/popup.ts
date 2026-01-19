@@ -175,20 +175,26 @@ class PopupManager {
       condition,
       pattern,
       folder,
+      priority: 0, // 優先度は後で設定
       overrideFilename: overrideFilename || undefined,
       rename: rename || undefined,
-      renameFilename: rename && renameFilename ? renameFilename : undefined
+      renameFilename: rename && renameFilename ? renameFilename : undefined,
     };
 
     chrome.storage.local.get(['settings'], (data) => {
       const settings: Settings = data.settings || { rules: [] };
 
       if (isEdit) {
+        // 既存ルールの更新(優先度は維持)
         const index = settings.rules.findIndex(r => r.id === ruleId);
+        const existingPriority = index !== -1 ? settings.rules[index].priority : 0;
         if (index !== -1) {
+          // 優先度を維持して更新
+          updatedRule.priority = existingPriority;
           settings.rules[index] = updatedRule;
         }
       } else {
+        // 新規追加
         settings.rules.push(updatedRule);
       }
 
