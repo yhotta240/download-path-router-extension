@@ -18,7 +18,7 @@ export interface Rule {
   condition: ConditionType;
   pattern: string; // マッチングに使用する文字列
   folder: string; // 保存先フォルダ名（相対パス）
-  priority: number; // カテゴリ内での優先順位（小さいほど優先度が高い）
+  priority?: number; // カテゴリ内での優先順位（小さいほど優先度が高い）
   overrideFilename?: boolean; // ファイル名を上書きするかどうか
   rename?: boolean; // リネーム機能を使用するかどうか
   renameFilename?: string; // リネーム時の新しいファイル名
