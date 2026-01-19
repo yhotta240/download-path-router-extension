@@ -68,8 +68,9 @@
           </h2>
           <div id="collapseForm" class="accordion-collapse collapse show" aria-labelledby="headingForm"
             data-bs-parent="#formAccordion">
-            <div class="accordion-body p-3">
+            <div class="accordion-body pt-1 px-3 pb-3">
               <input type="hidden" id="rule-id" />
+              <small class="text-danger">* は必須項目です</small>
               <div class="mb-2">
                 <label class="form-label small mb-1">カテゴリ</label>
                 <select class="form-select form-select-sm" id="rule-category">
@@ -78,15 +79,15 @@
                 </select>
               </div>
               <div class="mb-2" id="site-pattern-container" style="display: none">
-                <label class="form-label small mb-1">対象サイトのURL/ドメイン</label>
+                <label class="form-label small mb-1 required">対象サイトのURL/ドメイン</label>
                 <div class="input-group input-group-sm">
                   <input type="text" class="form-control form-control-sm" id="rule-site-pattern"
-                    placeholder="例: teams.microsoft.com" />
+                    placeholder="例: teams.microsoft.com" required aria-required="true" />
                   <button class="btn btn-secondary" type="button" id="get-current-site-button"
                     title="現在のサイトを取得">現在のサイト</button>
                 </div>
               </div>
-              <div class="mb-2">
+              <div class="mb-1">
                 <label class="form-label small mb-1">条件</label>
                 <select class="form-select form-select-sm" id="rule-condition">
                   <option value="extension">拡張子 (例: pdf, zip)</option>
@@ -94,10 +95,10 @@
                   <option value="url">URLに含まれる文字列</option>
                 </select>
               </div>
-              <div class="mb-2">
-                <label class="form-label small mb-1">パターン</label>
+              <div class="mb-1">
+                <label class="form-label small mb-1 required">パターン</label>
                 <input type="text" class="form-control form-control-sm" id="rule-pattern"
-                  placeholder="例: pdf / teams / report" />
+                  placeholder="例: pdf / teams / report" required aria-required="true" />
               </div>
               <div class="mb-3">
                 <label class="form-label small mb-1">保存先フォルダ</label>

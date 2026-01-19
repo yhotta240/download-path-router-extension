@@ -43,3 +43,9 @@ html {
 .sortable-drag {
   opacity: 1;
 }
+
+.required::after {
+  content: " *";
+  color: red;
+  font-size: 1.1rem;
+}
