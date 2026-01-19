@@ -177,22 +177,46 @@ class PopupManager {
       folder,
       overrideFilename: overrideFilename || undefined,
       rename: rename || undefined,
-      renameFilename: rename && renameFilename ? renameFilename : undefined
+      renameFilename: rename && renameFilename ? renameFilename : undefined,
+      priority: undefined,
     };
 
     chrome.storage.local.get(['settings'], (data) => {
       const settings: Settings = data.settings || { rules: [] };
 
       if (isEdit) {
+        // 既存ルールの更新
         const index = settings.rules.findIndex(r => r.id === ruleId);
-        if (index !== -1) {
+        if (index === -1) {
+          console.error('編集しようとしたルールが見つかりません:', ruleId);
+          this.showMessage('ルールの編集に失敗しました．対象のルールが見つかりませんでした．');
+          return;
+        }
+
+        const originalRule = settings.rules[index];
+
+        if (originalRule.category === updatedRule.category) {
+          // カテゴリ変更なし: 優先度を維持して上書き
+          updatedRule.priority = originalRule.priority;
           settings.rules[index] = updatedRule;
+        } else {
+          // カテゴリ変更あり: 元ルールを削除し，新カテゴリの先頭に挿入
+          settings.rules = settings.rules.filter(r => r.id !== ruleId);
+          this.insertRuleAtCategoryHead(settings, updatedRule);
         }
       } else {
-        settings.rules.push(updatedRule);
+        // 新規ルール追加: 指定カテゴリの先頭に挿入して既存優先度を +1
+        this.insertRuleAtCategoryHead(settings, updatedRule);
       }
 
+      // 優先度の連番を詰めてから保存
+      this.normalizePriorities(settings);
       chrome.storage.local.set({ settings }, () => {
+        if (chrome.runtime.lastError) {
+          console.error('ルールの保存中にエラーが発生しました:', chrome.runtime.lastError);
+          this.showMessage('ルールの保存に失敗しました．もう一度お試しください．');
+          return;
+        }
         this.renderRules(settings.rules);
         this.showMessage(isEdit ? 'ルールを更新しました' : '新しいルールを追加しました');
         this.cancelEdit(); // フォームをクリアしてモードリセット
@@ -457,13 +481,57 @@ class PopupManager {
             rule.priority = index + 1;
           });
 
+          // 全体を正規化して保存
+          this.normalizePriorities(settings);
           chrome.storage.local.set({ settings }, () => {
+            if (chrome.runtime.lastError) {
+              console.error('ルールの並び替え中にエラーが発生しました:', chrome.runtime.lastError);
+              this.showMessage('ルールの並び替えに失敗しました．もう一度お試しください．');
+              return;
+            }
             this.renderRules(settings.rules);
             this.showMessage('ルールの優先度を変更しました');
           });
         });
       }
     });
+  }
+
+  // 各カテゴリごとに優先度を1..Nの連番に詰め直し，settings.rules をカテゴリ順に再構成する
+  private normalizePriorities(settings: Settings): void {
+    const categories = ['site', 'general'] as const;
+    const normalized: Rule[] = [];
+
+    categories.forEach((cat) => {
+      const group = settings.rules
+        .filter(r => r.category === cat)
+        .sort((a, b) => (a.priority ?? Number.MAX_VALUE) - (b.priority ?? Number.MAX_VALUE));
+
+      group.forEach((r, i) => { r.priority = i + 1; });
+      normalized.push(...group);
+    });
+
+    settings.rules = normalized;
+  }
+
+  // 指定カテゴリの先頭にルールを挿入し，既存ルールの優先度を +1 する
+  private insertRuleAtCategoryHead(settings: Settings, updatedRule: Rule): void {
+    const currentCategoryRules = settings.rules.filter(r => r.category === updatedRule.category);
+    const otherCategoryRules = settings.rules.filter(r => r.category !== updatedRule.category);
+
+    const newRuleWithPriority: Rule = {
+      ...updatedRule,
+      priority: 1,
+    };
+
+    const categoryRulesWithUpdatedPriority: Rule[] = currentCategoryRules.map(r => {
+      if (typeof r.priority === 'number') {
+        return { ...r, priority: r.priority + 1 };
+      }
+      return r;
+    });
+
+    settings.rules = [newRuleWithPriority, ...categoryRulesWithUpdatedPriority, ...otherCategoryRules];
   }
 
   private toggleSortMode(category: RuleCategory): void {
@@ -495,7 +563,14 @@ class PopupManager {
     chrome.storage.local.get(['settings'], (data) => {
       const settings: Settings = data.settings || { rules: [] };
       settings.rules = settings.rules.filter(r => r.id !== id);
+      // 削除後に優先度を詰める
+      this.normalizePriorities(settings);
       chrome.storage.local.set({ settings }, () => {
+        if (chrome.runtime.lastError) {
+          console.error('ルールの削除中にエラーが発生しました:', chrome.runtime.lastError);
+          this.showMessage('ルールの削除に失敗しました．もう一度お試しください．');
+          return;
+        }
         this.renderRules(settings.rules);
         this.showMessage('ルールを削除しました');
       });
