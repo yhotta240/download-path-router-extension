@@ -175,7 +175,7 @@ class PopupManager {
       condition,
       pattern,
       folder,
-      priority: 0, // 優先度は後で設定
+      priority: 0, // 新しいルールの優先度は先頭に，編集時は既存の優先度を維持するためあとで上書き
       overrideFilename: overrideFilename || undefined,
       rename: rename || undefined,
       renameFilename: rename && renameFilename ? renameFilename : undefined,
@@ -192,6 +192,8 @@ class PopupManager {
           // 優先度を維持して更新
           updatedRule.priority = existingPriority;
           settings.rules[index] = updatedRule;
+        } else {
+          console.error('編集しようとしたルールが見つかりません:', ruleId);
         }
       } else {
         // 新規追加
