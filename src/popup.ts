@@ -351,6 +351,74 @@ class PopupManager {
     collapseEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  // 既存ルールの内容を新規追加フォームへコピーする
+  private handleCopyRule(rule: Rule): void {
+    const idInput = document.getElementById('rule-id') as HTMLInputElement;
+    const categorySelect = document.getElementById('rule-category') as HTMLSelectElement;
+    const conditionSelect = document.getElementById('rule-condition') as HTMLSelectElement;
+    const patternInput = document.getElementById('rule-pattern') as HTMLInputElement;
+    const folderInput = document.getElementById('rule-folder') as HTMLInputElement;
+    const sitePatternInput = document.getElementById('rule-site-pattern') as HTMLInputElement;
+    const overrideFilenameCheckbox = document.getElementById('rule-override-filename') as HTMLInputElement;
+    const renameCheckbox = document.getElementById('rule-rename') as HTMLInputElement;
+    const renameFilenameInput = document.getElementById('rule-rename-filename') as HTMLInputElement;
+    const renameInputContainer = document.getElementById('rule-rename-input-container');
+    const sitePatternContainer = document.getElementById('site-pattern-container');
+    const addButton = document.getElementById('add-rule-button');
+    const cancelButton = document.getElementById('cancel-edit-button');
+    const formTitle = document.getElementById('form-title');
+    const accordionItem = document.getElementById('form-accordion-item');
+    const accordionButton = document.getElementById('form-accordion-button');
+
+    // コピーなので ID は空にして新規モードにする
+    idInput.value = '';
+
+    // フォームに値をセット（ID, priority はコピーしない）
+    categorySelect.value = rule.category;
+    conditionSelect.value = rule.condition;
+    patternInput.value = rule.pattern;
+    folderInput.value = rule.folder;
+    sitePatternInput.value = rule.sitePattern || '';
+    overrideFilenameCheckbox.checked = rule.overrideFilename || false;
+    renameCheckbox.checked = rule.rename || false;
+    renameFilenameInput.value = rule.renameFilename || '';
+    if (renameInputContainer) {
+      renameInputContainer.style.display = (rule.rename || false) ? 'block' : 'none';
+    }
+
+    // カテゴリによる表示切り替え
+    if (sitePatternContainer) {
+      sitePatternContainer.style.display = rule.category === 'site' ? 'block' : 'none';
+    }
+
+    // UIを新規追加モードに戻す
+    if (addButton) {
+      addButton.textContent = 'ルールを追加';
+      addButton.classList.remove('btn-success');
+      addButton.classList.add('btn-primary');
+    }
+    if (cancelButton) cancelButton.style.display = 'none';
+    if (formTitle) formTitle.textContent = '新規ルール追加';
+
+    if (accordionItem) {
+      accordionItem.style.borderColor = '';
+    }
+    if (accordionButton) {
+      accordionButton.style.backgroundColor = '';
+      accordionButton.style.color = '';
+    }
+
+    // アコーディオンを開く
+    const collapseEl = document.getElementById('collapseForm');
+    if (collapseEl && !collapseEl.classList.contains('show')) {
+      const btn = document.querySelector('[data-bs-target="#collapseForm"]') as HTMLElement;
+      if (btn) btn.click();
+    }
+
+    // フォームへスクロール
+    collapseEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   private renderRules(rules: Rule[], newRuleId?: string | null): void {
     const siteList = document.getElementById('site-rules-list');
     const generalList = document.getElementById('general-rules-list');
@@ -452,6 +520,9 @@ class PopupManager {
         <button class="btn btn-outline-success btn-sm p-1 edit-rule" style="width: 28px; height: 28px;" title="編集">
           <i class="bi bi-pencil-square" style="pointer-events: none;"></i>
         </button>
+        <button class="btn btn-outline-secondary btn-sm p-1 copy-rule" style="width: 28px; height: 28px;" title="コピー">
+          <i class="bi bi-clipboard" style="pointer-events: none;"></i>
+        </button>
         <button class="btn btn-outline-danger btn-sm p-1 delete-rule" style="width: 28px; height: 28px;" title="削除" data-id="${rule.id}">
           <i class="bi bi-trash" style="pointer-events: none;"></i>
         </button>
@@ -461,6 +532,11 @@ class PopupManager {
     const editBtn = div.querySelector('.edit-rule');
     if (editBtn) {
       editBtn.addEventListener('click', () => this.handleEditRule(rule));
+    }
+
+    const copyBtn = div.querySelector('.copy-rule');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => this.handleCopyRule(rule));
     }
 
     const deleteBtn = div.querySelector('.delete-rule');
