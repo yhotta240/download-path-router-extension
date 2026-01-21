@@ -29,6 +29,7 @@ export interface Rule {
  */
 export interface Settings {
   rules: Rule[];
+  newRuleId?: string | null; // 新規ルール作成時に使用する一時的なID
 }
 
 /**
@@ -36,4 +37,5 @@ export interface Settings {
  */
 export const DEFAULT_SETTINGS: Settings = {
   rules: [],
+  newRuleId: null,
 };
