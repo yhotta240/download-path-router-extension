@@ -36,7 +36,8 @@ class PopupManager {
       this.showMessage(`${this.manifestData.short_name} が起動しました`);
 
       const settings: Settings = data.settings || { rules: [] };
-      this.renderRules(settings.rules);
+      // newRuleId は無視して開いたときは表示しない
+      this.renderRules(settings.rules, null);
 
       // フォームの折りたたみ状態を復元
       const collapseEl = document.getElementById('collapseForm');
@@ -118,6 +119,22 @@ class PopupManager {
         renameInputContainer.style.display = renameCheckbox.checked ? 'block' : 'none';
       });
     }
+
+    // ポップアップが閉じられる時に newRuleId をクリアしてバッジを消す
+    const clearNewRuleId = () => {
+      chrome.storage.local.get(['settings'], (data) => {
+        const settings: Settings = data.settings || { rules: [] };
+        if (settings.newRuleId) {
+          settings.newRuleId = null;
+          chrome.storage.local.set({ settings });
+        }
+      });
+    };
+
+    document.addEventListener('visibilitychange', () => {
+      console.log('Document visibility changed:', document.visibilityState);
+      if (document.visibilityState === 'hidden') clearNewRuleId();
+    });
   }
 
   private fillCurrentSiteUrl(): void {
@@ -204,9 +221,12 @@ class PopupManager {
           settings.rules = settings.rules.filter(r => r.id !== ruleId);
           this.insertRuleAtCategoryHead(settings, updatedRule);
         }
+        // 編集後は newRuleId をクリア
+        if (settings.newRuleId === ruleId) settings.newRuleId = null;
       } else {
         // 新規ルール追加: 指定カテゴリの先頭に挿入して既存優先度を +1
         this.insertRuleAtCategoryHead(settings, updatedRule);
+        settings.newRuleId = updatedRule.id; // 新規追加されたルールのIDを保存
       }
 
       // 優先度の連番を詰めてから保存
@@ -217,7 +237,7 @@ class PopupManager {
           this.showMessage('ルールの保存に失敗しました．もう一度お試しください．');
           return;
         }
-        this.renderRules(settings.rules);
+        this.renderRules(settings.rules, settings.newRuleId);
         this.showMessage(isEdit ? 'ルールを更新しました' : '新しいルールを追加しました');
         this.cancelEdit(); // フォームをクリアしてモードリセット
       });
@@ -331,7 +351,7 @@ class PopupManager {
     collapseEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  private renderRules(rules: Rule[]): void {
+  private renderRules(rules: Rule[], newRuleId?: string | null): void {
     const siteList = document.getElementById('site-rules-list');
     const generalList = document.getElementById('general-rules-list');
 
@@ -354,7 +374,8 @@ class PopupManager {
       siteList.innerHTML = '<div class="text-muted small text-center p-2 border rounded">登録されたルールはありません</div>';
     } else {
       siteRules.sort(sortByPriority).forEach((rule, index) => {
-        siteList.appendChild(this.createRuleElement(rule, index + 1, siteRules.length, 'site'));
+        const isNew = newRuleId === rule.id;
+        siteList.appendChild(this.createRuleElement(rule, index + 1, isNew));
       });
       if (this.sortModeActive.site) {
         this.initSortable(siteList, 'site');
@@ -365,7 +386,8 @@ class PopupManager {
       generalList.innerHTML = '<div class="text-muted small text-center p-2 border rounded">登録されたルールはありません</div>';
     } else {
       generalRules.sort(sortByPriority).forEach((rule, index) => {
-        generalList.appendChild(this.createRuleElement(rule, index + 1, generalRules.length, 'general'));
+        const isNew = newRuleId === rule.id;
+        generalList.appendChild(this.createRuleElement(rule, index + 1, isNew));
       });
       if (this.sortModeActive.general) {
         this.initSortable(generalList, 'general');
@@ -376,7 +398,7 @@ class PopupManager {
     this.updateSortModeDisplay();
   }
 
-  private createRuleElement(rule: Rule, priority: number, totalRules: number, category: RuleCategory): HTMLElement {
+  private createRuleElement(rule: Rule, priority: number, isNew?: boolean): HTMLElement {
     const div = document.createElement('div');
     div.className = 'list-group-item p-2 d-flex justify-content-between align-items-center';
     div.id = `rule-${rule.id}`;
@@ -408,6 +430,8 @@ class PopupManager {
         </div>`
       : '';
 
+    const newBadgeHtml = `<span class="badge bg-danger ms-1 ${isNew ? '' : 'd-none'}" title="新規追加">NEW</span>`;
+
     div.innerHTML = `
       <div class="drag-handle" style="cursor: move; padding: 4px; margin-right: 8px;">
         <i class="bi bi-grip-vertical" style="font-size: 16px; color: #6c757d;"></i>
@@ -417,6 +441,7 @@ class PopupManager {
           <span class="badge bg-info me-1">優先度: ${priority}</span>
           <span class="badge bg-secondary me-1">${conditionLabels[rule.condition]}</span>
           ${rule.pattern}
+          ${newBadgeHtml}
         </div>
         ${siteInfo}
         <div class="text-muted text-truncate" style="font-size: 0.75rem;">
@@ -489,7 +514,7 @@ class PopupManager {
               this.showMessage('ルールの並び替えに失敗しました．もう一度お試しください．');
               return;
             }
-            this.renderRules(settings.rules);
+            this.renderRules(settings.rules, settings.newRuleId);
             this.showMessage('ルールの優先度を変更しました');
           });
         });
@@ -539,7 +564,7 @@ class PopupManager {
 
     chrome.storage.local.get(['settings'], (data) => {
       const settings: Settings = data.settings || { rules: [] };
-      this.renderRules(settings.rules);
+      this.renderRules(settings.rules, settings.newRuleId);
     });
   }
 
@@ -563,6 +588,8 @@ class PopupManager {
     chrome.storage.local.get(['settings'], (data) => {
       const settings: Settings = data.settings || { rules: [] };
       settings.rules = settings.rules.filter(r => r.id !== id);
+      // 削除対象が newRuleId の場合はクリア
+      if (settings.newRuleId === id) settings.newRuleId = null;
       // 削除後に優先度を詰める
       this.normalizePriorities(settings);
       chrome.storage.local.set({ settings }, () => {
@@ -571,7 +598,7 @@ class PopupManager {
           this.showMessage('ルールの削除に失敗しました．もう一度お試しください．');
           return;
         }
-        this.renderRules(settings.rules);
+        this.renderRules(settings.rules, settings.newRuleId);
         this.showMessage('ルールを削除しました');
       });
     });
