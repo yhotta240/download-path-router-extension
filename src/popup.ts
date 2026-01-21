@@ -286,6 +286,16 @@ class PopupManager {
   }
 
   private handleEditRule(rule: Rule): void {
+    this.populateRuleForm(rule, { setId: true, mode: 'edit' });
+  }
+
+  // 既存ルールの内容を新規追加フォームへコピーする
+  private handleCopyRule(rule: Rule): void {
+    this.populateRuleForm(rule, { setId: false, mode: 'new' });
+  }
+
+  // ルールオブジェクトからフォームへ値をセットする
+  private populateRuleForm(rule: Rule, options: { setId: boolean; mode: 'edit' | 'new' }): void {
     const idInput = document.getElementById('rule-id') as HTMLInputElement;
     const categorySelect = document.getElementById('rule-category') as HTMLSelectElement;
     const conditionSelect = document.getElementById('rule-condition') as HTMLSelectElement;
@@ -303,51 +313,68 @@ class PopupManager {
     const accordionItem = document.getElementById('form-accordion-item');
     const accordionButton = document.getElementById('form-accordion-button');
 
-    // フォームに値をセット
-    idInput.value = rule.id;
-    categorySelect.value = rule.category;
-    conditionSelect.value = rule.condition;
-    patternInput.value = rule.pattern;
-    folderInput.value = rule.folder;
-    sitePatternInput.value = rule.sitePattern || '';
-    overrideFilenameCheckbox.checked = rule.overrideFilename || false;
-    renameCheckbox.checked = rule.rename || false;
-    renameFilenameInput.value = rule.renameFilename || '';
+    // ID の扱い
+    if (options.setId) {
+      if (idInput) idInput.value = rule.id;
+    } else {
+      if (idInput) idInput.value = '';
+    }
+
+    // フォームに値をセット（ID, priority はコピーしない）
+    if (categorySelect) categorySelect.value = rule.category;
+    if (conditionSelect) conditionSelect.value = rule.condition;
+    if (patternInput) patternInput.value = rule.pattern;
+    if (folderInput) folderInput.value = rule.folder;
+    if (sitePatternInput) sitePatternInput.value = rule.sitePattern || '';
+    if (overrideFilenameCheckbox) overrideFilenameCheckbox.checked = rule.overrideFilename || false;
+    if (renameCheckbox) renameCheckbox.checked = rule.rename || false;
+    if (renameFilenameInput) renameFilenameInput.value = rule.renameFilename || '';
     if (renameInputContainer) {
       renameInputContainer.style.display = (rule.rename || false) ? 'block' : 'none';
     }
 
-    // コンテナの表示切り替え
+    // カテゴリによる表示切り替え
     if (sitePatternContainer) {
       sitePatternContainer.style.display = rule.category === 'site' ? 'block' : 'none';
     }
 
-    // UIの状態を変更
-    if (addButton) {
-      addButton.textContent = 'ルールを編集';
-      addButton.classList.remove('btn-primary');
-      addButton.classList.add('btn-success'); // 緑色
-    }
-    if (cancelButton) cancelButton.style.display = 'block';
-    if (formTitle) formTitle.textContent = 'ルールの編集';
+    // UI のモード切替
+    if (options.mode === 'edit') {
+      if (addButton) {
+        addButton.textContent = 'ルールを編集';
+        addButton.classList.remove('btn-primary');
+        addButton.classList.add('btn-success');
+      }
+      if (cancelButton) cancelButton.style.display = 'block';
+      if (formTitle) formTitle.textContent = 'ルールの編集';
 
-    // 編集時のみ緑のテーマを適用
-    if (accordionItem) {
-      accordionItem.style.borderColor = '#badbcc';
-    }
-    if (accordionButton) {
-      accordionButton.style.backgroundColor = '#e2f0e9';
-      accordionButton.style.color = '#0f5132';
+      if (accordionItem) accordionItem.style.borderColor = '#badbcc';
+      if (accordionButton) {
+        accordionButton.style.backgroundColor = '#e2f0e9';
+        accordionButton.style.color = '#0f5132';
+      }
+    } else {
+      if (addButton) {
+        addButton.textContent = 'ルールを追加';
+        addButton.classList.remove('btn-success');
+        addButton.classList.add('btn-primary');
+      }
+      if (cancelButton) cancelButton.style.display = 'none';
+      if (formTitle) formTitle.textContent = '新規ルール追加';
+
+      if (accordionItem) accordionItem.style.borderColor = '';
+      if (accordionButton) {
+        accordionButton.style.backgroundColor = '';
+        accordionButton.style.color = '';
+      }
     }
 
-    // アコーディオンを開く
+    // アコーディオンを開いてスクロール
     const collapseEl = document.getElementById('collapseForm');
     if (collapseEl && !collapseEl.classList.contains('show')) {
       const btn = document.querySelector('[data-bs-target="#collapseForm"]') as HTMLElement;
       if (btn) btn.click();
     }
-
-    // フォームへスクロール
     collapseEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -452,6 +479,9 @@ class PopupManager {
         <button class="btn btn-outline-success btn-sm p-1 edit-rule" style="width: 28px; height: 28px;" title="編集">
           <i class="bi bi-pencil-square" style="pointer-events: none;"></i>
         </button>
+        <button class="btn btn-outline-secondary btn-sm p-1 copy-rule" style="width: 28px; height: 28px;" title="コピー">
+          <i class="bi bi-clipboard" style="pointer-events: none;"></i>
+        </button>
         <button class="btn btn-outline-danger btn-sm p-1 delete-rule" style="width: 28px; height: 28px;" title="削除" data-id="${rule.id}">
           <i class="bi bi-trash" style="pointer-events: none;"></i>
         </button>
@@ -461,6 +491,11 @@ class PopupManager {
     const editBtn = div.querySelector('.edit-rule');
     if (editBtn) {
       editBtn.addEventListener('click', () => this.handleEditRule(rule));
+    }
+
+    const copyBtn = div.querySelector('.copy-rule');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => this.handleCopyRule(rule));
     }
 
     const deleteBtn = div.querySelector('.delete-rule');
