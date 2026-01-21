@@ -129,7 +129,8 @@
                 <div class="ms-4" id="rule-rename-input-container" style="display: none;">
                   <input type="text" class="form-control form-control-sm" id="rule-rename-filename"
                     placeholder="例: [date]-[original] や backup-[original] など" />
-                  <small class="text-muted" style="font-size: 0.75rem">利用可能: [original], [date], [time], [datetime], [ext]</small>
+                  <small class="text-muted" style="font-size: 0.75rem">利用可能: [original], [date], [time], [datetime],
+                    [ext]</small>
                 </div>
               </div>
 
@@ -165,20 +166,6 @@
       <div id="general-rules-list" class="list-group mb-4">
         <!-- ここにJavaScriptでルールが追加されます -->
         <div class="text-muted small text-center p-2 border rounded">登録されたルールはありません</div>
-      </div>
-    </div>
-
-    <!-- 概要 -->
-    <div class="tab-pane fade mt-2 mx-2" id="description" role="tabpanel" style="margin-bottom: 200px"
-      aria-labelledby="description-tab">
-      <div>
-        <h5>概要</h5>
-        <p class="my-1 fw-bold">説明:</p>
-        <p>このChrome拡張機能を使えば，○○できます．</p>
-        <p class="my-1 fw-bold">拡張機能の主な特徴:</p>
-        <p class="mt-1">機能の説明を書く</p>
-        <p class="my-1 fw-bold">注意点:</p>
-        <p class="mt-1">注意点を書く</p>
       </div>
     </div>
 
@@ -338,8 +325,17 @@
       <ul class="list-group list-group-flush">
         <h5 class="pt-3 ps-2 mb-2">更新履歴</h5>
         <li class="list-group-item">
-          <strong>v1.1.0</strong>
+          <strong>v1.2.0</strong>
           <span class="badge bg-primary">最新</span>
+          <ul class="small mt-1">
+            <li>既存ルールを新規ルール追加フォームへコピーする機能を追加</li>
+            <li>新規ルール追加時に NEW バッジを表示</li>
+            <li>ルール設定画面に必須項目のマークを追加</li>
+            <li>編集時にルールの優先度が変わってしまう問題を修正</li>
+          </ul>
+        </li>
+        <li class="list-group-item">
+          <strong>v1.1.0</strong>
           <ul class="small mt-1">
             <li>カテゴリ内の優先度を明記（小さい順に適用）</li>
             <li>並び替えモードでドラッグして優先度変更</li>
@@ -347,14 +343,9 @@
           </ul>
         </li>
         <li class="list-group-item">
-          <strong>v1.0.1</strong>
+          <strong>v1.0.0 - v1.0.1</strong>
           <ul class="small mt-1">
             <li>「現在のサイト」取得機能の不具合を修正</li>
-          </ul>
-        </li>
-        <li class="list-group-item">
-          <strong>v1.0.0</strong>
-          <ul class="small mt-1">
             <li>初回リリース</li>
           </ul>
         </li>
