@@ -8,11 +8,6 @@
 - 拡張子・ファイル名・URL による柔軟なルール設定
 - ユーザー操作不要の自動保存
 
-## 必要条件
-
-- [Node.js](https://nodejs.org/) (v18.x 以上を推奨)
-- [npm](https://www.npmjs.com/) または [yarn](https://yarnpkg.com/)
-
 ## インストール
 
 ### Chrome Web Store からインストール
@@ -20,6 +15,13 @@
 [Download Path Router - Chrome ウェブストア](https://chrome.google.com/webstore/detail/dhdbncbbbcfecaoagbcefnjjdkncaejm)
 
 ### 手動インストール
+
+必要条件
+
+- [Node.js](https://nodejs.org/) (v18.x 以上を推奨)
+- [npm](https://www.npmjs.com/) または [yarn](https://yarnpkg.com/)
+
+手順
 
 1. このリポジトリをクローン
 
