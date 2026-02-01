@@ -10,7 +10,7 @@ module.exports = {
   entry: {
     background: isDev ? "./src/background.dev.ts" : "./src/background.ts",
     content: "./src/content.ts",
-    popup: "./src/popup.ts"
+    popup: "./src/popup/popup.ts"
   },
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -18,7 +18,7 @@ module.exports = {
     clean: true
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js"]
+    extensions: [".ts", ".tsx", ".js", ".css"]
   },
   module: {
     rules: [

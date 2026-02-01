@@ -1,12 +1,13 @@
+import './popup.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Sortable from 'sortablejs';
-import { PopupPanel } from './popup/panel';
-import { dateTime } from './utils/date';
-import { openLinkNewTab } from './utils/dom';
-import { getSiteAccessText } from './utils/permissions';
-import meta from '../public/manifest.meta.json';
-import { Rule, Settings, ConditionType, RuleCategory, DEFAULT_SETTINGS, Theme } from './settings';
-import { applyTheme, initThemeMenu } from './popup/theme';
+import { PopupPanel } from './panel';
+import { dateTime } from '../utils/date';
+import { openLinkNewTab } from '../utils/dom';
+import { getSiteAccessText } from '../utils/permissions';
+import meta from '../../public/manifest.meta.json';
+import { Rule, Settings, ConditionType, RuleCategory, DEFAULT_SETTINGS, Theme } from '../settings';
+import { applyTheme, initThemeMenu } from './theme';
 
 class PopupManager {
   private panel: PopupPanel;
