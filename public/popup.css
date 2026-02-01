@@ -22,6 +22,67 @@ html {
   transition: none !important;
 }
 
+#theme-button,
+#new-tab-button {
+  width: 28px;
+  height: 28px;
+  /* border: none; */
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+#theme-button:hover,
+#new-tab-button:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* メニュー */
+#theme-menu {
+  position: absolute;
+  top: 32px;
+  right: 0;
+  z-index: 2500;
+}
+
+#theme-menu .theme-option {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: inherit;
+}
+
+#theme-menu .theme-option:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* アクティブ */
+#theme-menu .theme-option.active {
+  background-color: var(--bs-primary, #0d6efd);
+  color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+#theme-menu .theme-option.active i,
+#theme-menu .theme-option.active svg {
+  color: #fff;
+  fill: #fff;
+  stroke: #fff;
+}
+
+/* SVG の stroke を文字色に合わせる（テーマ切替時にアイコン色を追従させる） */
+svg {
+  stroke: currentColor;
+}
+
 /* Sortable.js styles */
 .drag-handle {
   display: none;
