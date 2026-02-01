@@ -5,7 +5,8 @@ import { dateTime } from './utils/date';
 import { openLinkNewTab } from './utils/dom';
 import { getSiteAccessText } from './utils/permissions';
 import meta from '../public/manifest.meta.json';
-import { Rule, Settings, ConditionType, RuleCategory } from './settings';
+import { Rule, Settings, ConditionType, RuleCategory, DEFAULT_SETTINGS, Theme } from './settings';
+import { applyTheme, initThemeMenu } from './popup/theme';
 
 class PopupManager {
   private panel: PopupPanel;
@@ -35,9 +36,11 @@ class PopupManager {
       }
       this.showMessage(`${this.manifestData.short_name} が起動しました`);
 
-      const settings: Settings = data.settings || { rules: [] };
+      const settings: Settings = data.settings || DEFAULT_SETTINGS;
       // newRuleId は無視して開いたときは表示しない
       this.renderRules(settings.rules, null);
+
+      applyTheme(settings.theme || DEFAULT_SETTINGS.theme);
 
       // フォームの折りたたみ状態を復元
       const collapseEl = document.getElementById('collapseForm');
@@ -61,6 +64,18 @@ class PopupManager {
         });
       });
     }
+
+    // テーマ設定のイベントリスナー
+    initThemeMenu(async (value: Theme) => {
+      chrome.storage.local.get(['settings'], (data) => {
+        const settings: Settings = data.settings || DEFAULT_SETTINGS;
+        if (settings.theme !== value) {
+          settings.theme = value;
+          chrome.storage.local.set({ settings });
+          this.showMessage(`テーマを ${value} に変更しました`);
+        }
+      });
+    });
 
     // フォームの折りたたみ状態を保存
     const collapseEl = document.getElementById('collapseForm');
@@ -123,7 +138,7 @@ class PopupManager {
     // ポップアップが閉じられる時に newRuleId をクリアしてバッジを消す
     const clearNewRuleId = () => {
       chrome.storage.local.get(['settings'], (data) => {
-        const settings: Settings = data.settings || { rules: [] };
+        const settings: Settings = data.settings || DEFAULT_SETTINGS;
         if (settings.newRuleId) {
           settings.newRuleId = null;
           chrome.storage.local.set({ settings });
