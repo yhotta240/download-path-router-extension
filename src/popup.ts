@@ -2,7 +2,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Sortable from 'sortablejs';
 import { PopupPanel } from './popup/panel';
 import { dateTime } from './utils/date';
-import { clickURL } from './utils/dom';
+import { openLinkNewTab } from './utils/dom';
 import { getSiteAccessText } from './utils/permissions';
 import meta from '../public/manifest.meta.json';
 import { Rule, Settings, ConditionType, RuleCategory } from './settings';
@@ -12,7 +12,7 @@ class PopupManager {
   private enabled: boolean = false;
   private enabledElement: HTMLInputElement | null;
   private manifestData: chrome.runtime.Manifest;
-  private manifestMetadata: { [key: string]: any } = (meta as any) || {};
+  private manifestMetadata: { [key: string]: any };
   private sortModeActive: { site: boolean; general: boolean } = { site: false, general: false };
   private sortableInstances: { site: Sortable | null; general: Sortable | null } = { site: null, general: null };
 
@@ -661,20 +661,24 @@ class PopupManager {
   }
 
   private setupInfoTab(): void {
-    const storeLink = document.getElementById('store_link') as HTMLAnchorElement;
+    const storeLink = document.getElementById('store-link') as HTMLAnchorElement;
     if (storeLink) {
       storeLink.href = `https://chrome.google.com/webstore/detail/${chrome.runtime.id}`;
-      clickURL(storeLink);
+      openLinkNewTab(storeLink);
     }
 
-    const extensionLink = document.getElementById('extension_link') as HTMLAnchorElement;
+    const extensionLink = document.getElementById('extension-link') as HTMLAnchorElement;
     if (extensionLink) {
       extensionLink.href = `chrome://extensions/?id=${chrome.runtime.id}`;
-      clickURL(extensionLink);
+      openLinkNewTab(extensionLink);
     }
 
-    clickURL(document.getElementById('issue-link'));
-    clickURL(document.getElementById('github-link'));
+    const issuesLink = document.getElementById('issues-link') as HTMLAnchorElement;
+    const issuesHref = this.manifestMetadata.issues_url;
+    if (issuesLink && issuesHref) {
+      issuesLink.href = issuesHref;
+      openLinkNewTab(issuesLink);
+    }
 
     const setElementText = (id: string, text: string) => {
       const el = document.getElementById(id);
@@ -713,9 +717,11 @@ class PopupManager {
     setElementText('developer-name', this.manifestMetadata.developer || '不明');
 
     const githubLink = document.getElementById('github-link') as HTMLAnchorElement;
-    if (githubLink) {
-      githubLink.href = this.manifestMetadata.github_url;
-      githubLink.textContent = this.manifestMetadata.github_url;
+    const githubHref = this.manifestMetadata.github_url;
+    if (githubLink && githubHref) {
+      githubLink.href = githubHref;
+      githubLink.textContent = githubHref;
+      openLinkNewTab(githubLink);
     }
   }
 
