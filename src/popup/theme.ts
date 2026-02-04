@@ -1,6 +1,8 @@
 import { Theme } from '../settings';
 
-// テーマを適用
+/**
+ * テーマ適用
+ */
 export function applyTheme(theme: Theme): void {
   const isSystem = theme === 'system';
   const themeColor = isSystem
@@ -17,7 +19,9 @@ export function applyTheme(theme: Theme): void {
   });
 }
 
-// テーマメニュー初期化
+/**
+ * テーマメニューの初期化
+ */
 export function initThemeMenu(onChange: (theme: Theme) => Promise<void>): void {
   const btn = document.getElementById('theme-button');
   const menu = document.getElementById('theme-menu');
@@ -42,4 +46,9 @@ export function initThemeMenu(onChange: (theme: Theme) => Promise<void>): void {
   });
 
   document.addEventListener('click', () => menu.classList.add('d-none'));
+
+  const moreButton = document.getElementById('more-button');
+  moreButton?.addEventListener('click', () => {
+    menu.classList.add('d-none');
+  });
 }

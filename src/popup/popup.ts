@@ -8,6 +8,7 @@ import { getSiteAccessText } from '../utils/permissions';
 import meta from '../../public/manifest.meta.json';
 import { Rule, Settings, ConditionType, RuleCategory, DEFAULT_SETTINGS, Theme } from '../settings';
 import { applyTheme, initThemeMenu } from './theme';
+import { initShareMenu, SharePlatform } from './share';
 
 class PopupManager {
   private panel: PopupPanel;
@@ -66,7 +67,7 @@ class PopupManager {
       });
     }
 
-    // テーマ設定のイベントリスナー
+    // テーマ設定メニュー
     initThemeMenu(async (value: Theme) => {
       chrome.storage.local.get(['settings'], (data) => {
         const settings: Settings = data.settings || DEFAULT_SETTINGS;
@@ -76,6 +77,24 @@ class PopupManager {
           this.showMessage(`テーマを ${value} に変更しました`);
         }
       });
+    });
+
+    // シェアメニュー
+    initShareMenu((platform: SharePlatform, success: boolean) => {
+      const platformNames: Record<SharePlatform, string> = {
+        twitter: 'X (Twitter)',
+        facebook: 'Facebook',
+        copy: 'クリップボード',
+      };
+      if (success) {
+        if (platform === 'copy') {
+          this.showMessage('URLをコピーしました');
+        } else {
+          this.showMessage(`${platformNames[platform]}でシェアしました`);
+        }
+      } else {
+        this.showMessage('シェアに失敗しました');
+      }
     });
 
     // フォームの折りたたみ状態を保存
@@ -666,14 +685,38 @@ class PopupManager {
     const enabledLabel = document.getElementById('enabled-label');
     if (enabledLabel) enabledLabel.textContent = `${short_name} を有効にする`;
 
-    const newTabButton = document.getElementById('new-tab-button');
-    if (newTabButton) {
-      newTabButton.addEventListener('click', () => {
-        chrome.tabs.create({ url: 'popup.html' });
-      });
-    }
-
+    this.setupMoreMenu();
     this.setupInfoTab();
+  }
+
+  private setupMoreMenu(): void {
+    const moreButton = document.getElementById('more-button');
+    const moreMenu = document.getElementById('more-menu');
+    const themeButton = document.getElementById('theme-button');
+    const newTabButton = document.getElementById('new-tab-button');
+
+    if (!moreButton || !moreMenu) return;
+
+    moreButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      moreMenu.classList.toggle('d-none');
+    });
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as Node;
+      if (!moreMenu.contains(target) && !moreButton.contains(target)) {
+        moreMenu.classList.add('d-none');
+      }
+    });
+
+    themeButton?.addEventListener('click', () => {
+      moreMenu.classList.add('d-none');
+    });
+
+    newTabButton?.addEventListener('click', () => {
+      chrome.tabs.create({ url: 'popup.html' });
+      moreMenu.classList.add('d-none');
+    });
   }
 
   private setupInfoTab(): void {

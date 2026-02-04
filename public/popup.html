@@ -14,7 +14,7 @@
         <img src="/icons/icon.png" class="my-auto mx-2" alt="message clear button" height="24" />
         <h1 class="my-auto fs-3" id="title-header"></h1>
       </div>
-      <div class="d-flex align-items-center gap-2">
+      <div class="d-flex align-items-center gap-md-3 gap-1">
         <!-- テーマ切替 -->
         <div class="position-relative">
           <button type="button" class="btn btn-sm p-1 d-flex justify-content-center align-items-center"
@@ -36,10 +36,43 @@
           </div>
         </div>
 
-        <!-- 新しいタブで開く -->
-        <button type="button" class="btn btn-sm p-1" id="new-tab-button" aria-label="新しいタブで開く" title="新しいタブで開く">
-          <i class="bi bi-box-arrow-up-right" style="font-size: 16px; line-height: 1;"></i>
-        </button>
+        <!-- その他メニュー -->
+        <div class="position-relative">
+          <button type="button" class="btn btn-sm p-1 d-flex justify-content-center align-items-center" id="more-button"
+            aria-label="その他" title="その他">
+            <i class="bi bi-three-dots-vertical" style="font-size: 16px; line-height: 1;"></i>
+          </button>
+          <div id="more-menu" class="card p-2 d-none position-absolute">
+            <div class="d-flex flex-column gap-1">
+              <!-- 新しいタブで開く -->
+              <button class="btn btn-sm more-option d-flex align-items-center gap-2 text-start" id="new-tab-button"
+                title="新しいタブで開く">
+                <i class="bi bi-box-arrow-up-right" style="font-size: 16px;"></i>
+                <span class="small">新しいタブで開く</span>
+              </button>
+              <hr class="my-1">
+              <!-- シェア -->
+              <div class="px-2 py-1">
+                <span class="small text-muted">シェア</span>
+              </div>
+              <button class="btn btn-sm share-option d-flex align-items-center gap-2 text-start" data-share="twitter"
+                title="X (Twitter)でシェア">
+                <i class="bi bi-twitter-x" style="font-size: 16px;"></i>
+                <span class="small">X (Twitter)</span>
+              </button>
+              <button class="btn btn-sm share-option d-flex align-items-center gap-2 text-start" data-share="facebook"
+                title="Facebookでシェア">
+                <i class="bi bi-facebook" style="font-size: 16px; color: #1877f2;"></i>
+                <span class="small">Facebook</span>
+              </button>
+              <button class="btn btn-sm share-option d-flex align-items-center gap-2 text-start" data-share="copy"
+                title="URLをコピー">
+                <i class="bi bi-clipboard" style="font-size: 16px;"></i>
+                <span class="small">URLをコピー</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

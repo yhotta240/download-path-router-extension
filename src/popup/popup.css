@@ -23,10 +23,9 @@ html {
 }
 
 #theme-button,
-#new-tab-button {
+#more-button {
   width: 28px;
   height: 28px;
-  /* border: none; */
   background: transparent;
   display: inline-flex;
   align-items: center;
@@ -36,16 +35,44 @@ html {
 }
 
 #theme-button:hover,
-#new-tab-button:hover {
+#more-button:hover {
   background-color: rgba(0, 0, 0, 0.04);
 }
 
-/* メニュー */
 #theme-menu {
   position: absolute;
-  top: 32px;
+  top: 36px;
   right: 0;
   z-index: 2500;
+}
+
+#more-menu {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  z-index: 2500;
+  min-width: 160px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#more-menu .share-option,
+#more-menu .more-option {
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+#more-menu .share-option:hover,
+#more-menu .more-option:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-bs-theme="dark"] #more-menu .share-option:hover,
+[data-bs-theme="dark"] #more-menu .more-option:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 #theme-menu .theme-option {
