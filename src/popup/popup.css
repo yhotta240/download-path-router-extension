@@ -7,8 +7,27 @@ html {
 }
 
 @media (min-width: 768px) {
+  html {
+    font-size: 1rem !important;
+  }
+
   .container-md {
     max-width: 720px !important;
+  }
+
+  i {
+    font-size: 130% !important;
+  }
+
+  svg {
+    width: 1.3rem !important;
+    height: 1.3rem !important;
+  }
+
+  .panel-btn {
+    height: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    width: auto !important;
   }
 }
 
@@ -20,6 +39,11 @@ html {
 
 #panel.no-transition {
   transition: none !important;
+}
+
+.panel-btn {
+  width: 20px;
+  height: 20px;
 }
 
 #theme-button,
