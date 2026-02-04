@@ -67,7 +67,6 @@ class PopupManager {
       });
     }
 
-    // テーマ設定メニュー
     initThemeMenu(async (value: Theme) => {
       chrome.storage.local.get(['settings'], (data) => {
         const settings: Settings = data.settings || DEFAULT_SETTINGS;
@@ -79,7 +78,6 @@ class PopupManager {
       });
     });
 
-    // シェアメニュー
     initShareMenu((platform: SharePlatform, success: boolean) => {
       const platformNames: Record<SharePlatform, string> = {
         twitter: 'X (Twitter)',
@@ -97,7 +95,6 @@ class PopupManager {
       }
     });
 
-    // フォームの折りたたみ状態を保存
     const collapseEl = document.getElementById('collapseForm');
     if (collapseEl) {
       collapseEl.addEventListener('shown.bs.collapse', () => {
@@ -108,19 +105,16 @@ class PopupManager {
       });
     }
 
-    // ルール追加/更新ボタン
     const addButton = document.getElementById('add-rule-button');
     if (addButton) {
       addButton.addEventListener('click', () => this.handleAddOrUpdateRule());
     }
 
-    // 編集キャンセルボタン
     const cancelEditButton = document.getElementById('cancel-edit-button');
     if (cancelEditButton) {
       cancelEditButton.addEventListener('click', () => this.cancelEdit());
     }
 
-    // 並び替えボタン
     const toggleSiteSortBtn = document.getElementById('toggle-site-sort-mode');
     if (toggleSiteSortBtn) {
       toggleSiteSortBtn.addEventListener('click', () => this.toggleSortMode('site'));
@@ -131,7 +125,6 @@ class PopupManager {
       toggleGeneralSortBtn.addEventListener('click', () => this.toggleSortMode('general'));
     }
 
-    // カテゴリ選択による表示切り替え
     const categorySelect = document.getElementById('rule-category') as HTMLSelectElement;
     const sitePatternContainer = document.getElementById('site-pattern-container');
     if (categorySelect && sitePatternContainer) {
@@ -140,13 +133,11 @@ class PopupManager {
       });
     }
 
-    // 現在のサイトを取得するボタン
     const getCurrentSiteButton = document.getElementById('get-current-site-button');
     if (getCurrentSiteButton) {
       getCurrentSiteButton.addEventListener('click', () => this.fillCurrentSiteUrl());
     }
 
-    // リネームチェックボックスによる入力フィールド表示制御
     const renameCheckbox = document.getElementById('rule-rename') as HTMLInputElement;
     const renameInputContainer = document.getElementById('rule-rename-input-container');
     if (renameCheckbox && renameInputContainer) {
@@ -155,7 +146,6 @@ class PopupManager {
       });
     }
 
-    // ポップアップが閉じられる時に newRuleId をクリアしてバッジを消す
     const clearNewRuleId = () => {
       chrome.storage.local.get(['settings'], (data) => {
         const settings: Settings = data.settings || DEFAULT_SETTINGS;
@@ -179,7 +169,7 @@ class PopupManager {
         // URLからドメイン部分を抽出
         try {
           const urlObj = new URL(url);
-          const domain = urlObj.hostname; // www なしのドメインを取得
+          const domain = urlObj.hostname;
           const sitePatternInput = document.getElementById('rule-site-pattern') as HTMLInputElement;
           if (sitePatternInput) {
             sitePatternInput.value = domain;
@@ -483,7 +473,7 @@ class PopupManager {
 
     const iconHtml = faviconUrl
       ? `<img src="${faviconUrl}" class="me-2 rounded-circle" style="width: 16px; height: 16px; object-fit: contain;" onerror="this.src='/icons/icon.png'">`
-      : `<i class="bi bi-file-earmark me-2" style="font-size: 14px;"></i>`;
+      : `<i class="bi bi-file-earmark me-2"></i>`;
 
     const siteInfo = rule.sitePattern
       ? `<div class="text-primary text-truncate d-flex align-items-center" style="font-size: 0.7rem;">
@@ -507,18 +497,18 @@ class PopupManager {
         </div>
         ${siteInfo}
         <div class="text-muted text-truncate" style="font-size: 0.75rem;">
-          <i class="bi bi-folder me-1"></i>${rule.folder || '(ルート)'}
+          <i class="bi bi-folder me-1" style="line-height: 1;"></i>${rule.folder || '(ルート)'}
         </div>
       </div>
       <div class="d-flex gap-1">
         <button class="btn btn-outline-success btn-sm p-1 edit-rule" style="width: 28px; height: 28px;" title="編集">
-          <i class="bi bi-pencil-square" style="pointer-events: none;"></i>
+          <i class="bi bi-pencil-square" style="pointer-events: none; line-height: 1;"></i>
         </button>
         <button class="btn btn-outline-secondary btn-sm p-1 copy-rule" style="width: 28px; height: 28px;" title="コピー">
-          <i class="bi bi-clipboard" style="pointer-events: none;"></i>
+          <i class="bi bi-clipboard" style="pointer-events: none; line-height: 1;"></i>
         </button>
         <button class="btn btn-outline-danger btn-sm p-1 delete-rule" style="width: 28px; height: 28px;" title="削除" data-id="${rule.id}">
-          <i class="bi bi-trash" style="pointer-events: none;"></i>
+          <i class="bi bi-trash" style="pointer-events: none; line-height: 1;"></i>
         </button>
       </div>
     `;

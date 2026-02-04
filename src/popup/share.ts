@@ -19,7 +19,7 @@ function getShareUrl(platform: SharePlatform, config: ShareConfig): string | nul
     case 'facebook':
       return `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
     case 'copy':
-      return null; // コピーはURLを開かない
+      return null;
     default:
       return null;
   }
@@ -87,7 +87,6 @@ export function initShareMenu(
         }
       }
 
-      // コールバック実行
       onShare?.(platform, success);
     });
   });

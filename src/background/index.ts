@@ -6,7 +6,9 @@ import { getDateTimeFormats } from "../utils/date";
 // ダウンロードIDとページURLのマッピング
 const downloadPageUrlMap = new Map<number, string>();
 
-/** ファイルのダウンロードパスをルーティング */
+/**
+ * ファイルのダウンロードパスをルーティング
+ */
 export function downloadPathRouter(): void {
 
   // Content Script からのクリック通知を受信
