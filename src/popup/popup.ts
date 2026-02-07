@@ -399,12 +399,14 @@ class PopupManager {
     }
 
     // アコーディオンを開いてスクロール
-    const collapseEl = document.getElementById('collapseForm');
-    if (collapseEl && !collapseEl.classList.contains('show')) {
-      const btn = document.querySelector('[data-bs-target="#collapseForm"]') as HTMLElement;
-      if (btn) btn.click();
+    const headingForm = document.getElementById('headingForm');
+    if (headingForm) {
+      const btn = headingForm.querySelector('[data-bs-target="#collapseForm"]') as HTMLElement;
+      if (btn && btn.classList.contains('collapsed')) {
+        btn.click();
+      }
     }
-    collapseEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    headingForm?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   private renderRules(rules: Rule[], newRuleId?: string | null): void {
