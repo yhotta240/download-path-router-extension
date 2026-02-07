@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Download Path Router - ダウンロードパスルーター",
   "short_name": "Download Path Router",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "ダウンロードしたファイルの保存先を条件に応じて振り分けます",
   "icons": {
     "48": "icons/icon.png"
