@@ -7,8 +7,16 @@ import { openLinkNewTab } from '../utils/dom';
 import { getSiteAccessText } from '../utils/permissions';
 import meta from '../../public/manifest.meta.json';
 import { Rule, Settings, ConditionType, RuleCategory, DEFAULT_SETTINGS, Theme } from '../settings';
-import { applyTheme, initThemeMenu } from './theme';
+import { applyTheme, getTheme, setupThemeMenu, } from './theme';
 import { initShareMenu, SharePlatform } from './share';
+
+try {
+  // フラッシュ防止のため先にテーマを適用
+  const theme = getTheme();
+  applyTheme(theme);
+} catch (e) {
+  // ignore
+}
 
 class PopupManager {
   private panel: PopupPanel;
@@ -42,8 +50,6 @@ class PopupManager {
       // newRuleId は無視して開いたときは表示しない
       this.renderRules(settings.rules, null);
 
-      applyTheme(settings.theme || DEFAULT_SETTINGS.theme);
-
       // フォームの折りたたみ状態を復元
       const collapseEl = document.getElementById('collapseForm');
       if (collapseEl) {
@@ -67,15 +73,13 @@ class PopupManager {
       });
     }
 
-    initThemeMenu(async (value: Theme) => {
-      chrome.storage.local.get(['settings'], (data) => {
-        const settings: Settings = data.settings || DEFAULT_SETTINGS;
-        if (settings.theme !== value) {
-          settings.theme = value;
-          chrome.storage.local.set({ settings });
-          this.showMessage(`テーマを ${value} に変更しました`);
-        }
-      });
+    setupThemeMenu((value: Theme) => {
+      try {
+        applyTheme(value);
+        this.showMessage(`テーマを ${value} に変更しました`);
+      } catch (e) {
+        this.showMessage('テーマ設定の保存に失敗しました');
+      }
     });
 
     initShareMenu((platform: SharePlatform, success: boolean) => {
